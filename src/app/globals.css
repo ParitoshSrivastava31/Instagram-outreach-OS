@@ -1,49 +1,42 @@
 @import "tailwindcss";
 
 :root {
-  --bg-page: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-subtle: #f1f5f9;
-  --border-light: #e2e8f0;
-  --border-medium: #cbd5e1;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --text-soft: #94a3b8;
-  --accent-primary: #0f172a;
-  --accent-indigo: #4f46e5;
-  --accent-emerald: #059669;
-  --accent-amber: #d97706;
-  --accent-rose: #e11d48;
+  --bg-page: #fafafa;
+  --bg-card: #ffffff;
+  --border: #e4e4e7;
+  --border-subtle: #f4f4f5;
+  --text-main: #09090b;
+  --text-secondary: #52525b;
+  --text-muted: #71717a;
+  --text-subtle: #a1a1aa;
 }
 
 body {
   background-color: var(--bg-page);
   color: var(--text-main);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Crisp light scrollbars */
+/* Minimalist Linear-style scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+  background: #e4e4e7;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #d4d4d8;
 }
 
-/* Light theme badges */
+/* Linear / Apple badge system */
 .badge-tier-a {
   background-color: #eef2ff;
   color: #4338ca;
@@ -63,13 +56,13 @@ body {
 }
 
 .badge-status-contacted {
-  background-color: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
 .badge-status-replied {
-  background-color: #fdf2f8;
-  color: #be185d;
-  border: 1px solid #fbcfe8;
+  background-color: #fff1f2;
+  color: #9f1239;
+  border: 1px solid #fecdd3;
 }
