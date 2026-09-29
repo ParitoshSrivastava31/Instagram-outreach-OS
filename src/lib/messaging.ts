@@ -162,7 +162,7 @@ export function renderMessage(
 ): string {
   const firstName = extractFirstName(lead.display_name, lead.instagram_username);
   const username = lead.instagram_username || '';
-  const niche = lead.matched_niches?.[0] || 'your niche';
+  const niche = lead.matched_niches?.[0] || 'your space';
   const followers = formatFollowersCount(lead.followers || 0);
   const senderName = sender?.display_name || sender?.name || 'Paritosh';
 

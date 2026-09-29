@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS leads (
   matched_niches TEXT[] DEFAULT '{}',
   status TEXT NOT NULL DEFAULT 'QUEUED', -- 'QUEUED', 'OPENED', 'CONTACTED', 'REPLIED', 'INTERESTED', 'USED_VAULT', 'SENT_SECOND_REEL', 'PAID', 'SKIPPED', 'SNOOZED'
   prepared_message TEXT,
+  template_name TEXT,
   campaign_id TEXT REFERENCES campaigns(id) ON DELETE SET NULL,
   notes TEXT,
   snoozed_until TIMESTAMPTZ,

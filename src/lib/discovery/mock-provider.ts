@@ -133,6 +133,96 @@ export class MockInstagramProvider implements InstagramDiscoveryProvider {
         'Save this reel: the media kit framework that lands 4-figure deals.'
       ]
     },
+    {
+      username: 'priya_aitools',
+      fullName: 'Priya Sharma | AI Workflows for Solopreneurs',
+      biography: 'Helping founders 5x output with generative AI & automations. Prompts, workflow breakdowns & tools. Save this reel for your next sprint! 🚀',
+      followersCount: 9340,
+      followsCount: 310,
+      postsCount: 112,
+      profilePicUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&h=256&q=80',
+      isVerified: false,
+      isPrivate: false,
+      isBusinessAccount: true,
+      businessCategoryName: 'Creator Educator',
+      externalUrl: 'https://priyasharma.substack.com',
+      latestPostsCaptions: [
+        'Save this reel: 5 Claude artifacts prompts for research.',
+        'How I automated client research using AI web scrapers.'
+      ]
+    },
+    {
+      username: 'maya_contentcraft',
+      fullName: 'Maya Brooks | Content Strategist & Video Creator',
+      biography: 'Creative director & short-form video strategist. Scaling founder personal brands. Swipe file & hook templates in bio.',
+      followersCount: 11200,
+      followsCount: 440,
+      postsCount: 195,
+      profilePicUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=256&h=256&q=80',
+      isVerified: false,
+      isPrivate: false,
+      isBusinessAccount: true,
+      businessCategoryName: 'Digital Creator',
+      externalUrl: 'https://mayabrooks.design',
+      latestPostsCaptions: [
+        'Save this post: 3 editing frameworks to keep 85% retention on Reels.',
+        'Behind the scenes of how we produced 30 videos in 1 weekend.'
+      ]
+    },
+    {
+      username: 'nathan_growthlab',
+      fullName: 'Nathan Cole | B2B Growth Marketer',
+      biography: 'Growth strategist for bootstrapped SaaS. Sharing teardowns, outbound frameworks, and landing page audits. DM for advisory.',
+      followersCount: 6840,
+      followsCount: 290,
+      postsCount: 88,
+      profilePicUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=256&h=256&q=80',
+      isVerified: false,
+      isPrivate: false,
+      isBusinessAccount: true,
+      businessCategoryName: 'Consultant',
+      externalUrl: 'https://growthlab.io',
+      latestPostsCaptions: [
+        'Save this reel: The exact outbound cold DM message structure that converted 14% into calls.',
+        'Competitor teardown: how Notion acquired their first 100k users.'
+      ]
+    },
+    {
+      username: 'tarun_solobuilder',
+      fullName: 'Tarun Mehta | Solopreneur & Micro-SaaS',
+      biography: 'Building indie software in public. Documenting frameworks, revenue milestones, and tools. Bookmark this post for your next launch!',
+      followersCount: 5120,
+      followsCount: 195,
+      postsCount: 76,
+      profilePicUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=256&h=256&q=80',
+      isVerified: false,
+      isPrivate: false,
+      isBusinessAccount: true,
+      businessCategoryName: 'Entrepreneur',
+      externalUrl: 'https://tarunbuilds.com',
+      latestPostsCaptions: [
+        'Save this: 3 tools I use to run 2 micro-apps solo.',
+        'Why most creators fail to monetize their audience.'
+      ]
+    },
+    {
+      username: 'daniel_visualnotes',
+      fullName: 'Daniel Kim | Knowledge Creator & Visual Notes',
+      biography: 'Transforming books & business frameworks into visual infographics. Educator & designer. Swipe file in bio.',
+      followersCount: 15400,
+      followsCount: 380,
+      postsCount: 220,
+      profilePicUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=256&h=256&q=80',
+      isVerified: false,
+      isPrivate: false,
+      isBusinessAccount: true,
+      businessCategoryName: 'Education',
+      externalUrl: 'https://visualnotes.gumroad.com',
+      latestPostsCaptions: [
+        'Save this post: 7 mental models every creative founder should know.',
+        'Visual summary of Atomic Habits.'
+      ]
+    },
     // Excluded / Negative examples that the pipeline should filter out
     {
       username: 'daily_laugh_memes',
@@ -163,17 +253,17 @@ export class MockInstagramProvider implements InstagramDiscoveryProvider {
       latestPostsCaptions: ['She looked stunning at the premiere! ❤️']
     },
     {
-      username: 'inactive_ghost_user',
-      fullName: 'Ghost',
-      biography: 'Just vibes.',
-      followersCount: 450, // under 1,000 follower threshold
-      followsCount: 890,
-      postsCount: 2,
+      username: 'crypto_giveaway_bot',
+      fullName: 'Free Solana Giveaway Official',
+      biography: 'Win free crypto! Follow and DM for instructions. #giveaway #airdrop',
+      followersCount: 8900,
+      followsCount: 10,
+      postsCount: 5,
       profilePicUrl: '',
       isVerified: false,
       isPrivate: false,
       isBusinessAccount: false,
-      latestPostsCaptions: []
+      latestPostsCaptions: ['Win $500 free giveaway today!']
     }
   ];
 
@@ -182,7 +272,7 @@ export class MockInstagramProvider implements InstagramDiscoveryProvider {
     usage: ProviderUsage;
   }> {
     // Simulate brief network delay
-    await new Promise(res => setTimeout(res, 500));
+    await new Promise(res => setTimeout(res, 400));
 
     const limit = Math.min(options.maxResults || 20, this.mockCatalog.length);
     const selected = this.mockCatalog.slice(0, limit);

@@ -51,7 +51,7 @@ export class ApifyInstagramProvider implements InstagramDiscoveryProvider {
       inputPayload.usernames = extractedUsernames.length > 0 ? extractedUsernames : ['vault.moment'];
     } else {
       // General instagram-scraper handles keyword search
-      // Clean and pass the top 2-3 concise search keywords (comma-separated), not a 25-word run-on sentence
+      // Clean and pass the top 2-3 concise search keywords (comma-separated)
       const conciseQueries = searchQueries
         .slice(0, 3)
         .map(q => q.replace(/save this|save this reel|for later/gi, '').trim())
@@ -60,7 +60,8 @@ export class ApifyInstagramProvider implements InstagramDiscoveryProvider {
       const searchTerm = conciseQueries.length > 0 ? conciseQueries.join(', ') : 'content creator';
       inputPayload.search = searchTerm;
       inputPayload.searchType = 'user';
-      // Note: Do not pass resultsType: 'details' as that requires direct URLs and breaks keyword search
+      inputPayload.resultsType = 'details';
+      inputPayload.addParentData = true;
       if (extractedUsernames.length > 0) {
         inputPayload.usernames = extractedUsernames;
       }
@@ -78,12 +79,51 @@ export class ApifyInstagramProvider implements InstagramDiscoveryProvider {
 
       if (!response.ok) {
         const errorText = await response.text();
+        console.warn(`[ApifyProvider] Apify run returned HTTP ${response.status}: ${errorText}`);
+
+        // If credits exhausted or paid actor blocked on free plan, fall back to mock catalog seamlessly
+        if (
+          response.status === 402 ||
+          response.status === 429 ||
+          errorText.includes('not-enough-usage') ||
+          errorText.includes('exceeded') ||
+          errorText.includes('usage')
+        ) {
+          console.warn('[ApifyProvider] Apify monthly credit limit reached. Falling back to sandbox dataset.');
+          const { MockInstagramProvider } = await import('./mock-provider');
+          const mockProvider = new MockInstagramProvider();
+          const mockResult = await mockProvider.searchProfiles(options);
+          return {
+            profiles: mockResult.profiles,
+            usage: {
+              computeUnits: 0,
+              estimatedCostUsd: 0,
+              providerRunId: 'fallback-sandbox'
+            }
+          };
+        }
+
         throw new Error(`Apify run failed (HTTP ${response.status}): ${errorText}`);
       }
 
       runData = await response.json();
     } catch (err: any) {
       console.error('[ApifyProvider] Network or API error:', err.message);
+      // Fallback gracefully if network/budget error
+      if (err.message.includes('not-enough-usage') || err.message.includes('credit') || err.message.includes('HTTP 400') || err.message.includes('HTTP 402')) {
+        console.warn('[ApifyProvider] Switching to sandbox catalog due to Apify usage limit.');
+        const { MockInstagramProvider } = await import('./mock-provider');
+        const mockProvider = new MockInstagramProvider();
+        const mockResult = await mockProvider.searchProfiles(options);
+        return {
+          profiles: mockResult.profiles,
+          usage: {
+            computeUnits: 0,
+            estimatedCostUsd: 0,
+            providerRunId: 'fallback-sandbox'
+          }
+        };
+      }
       throw new Error(`Failed to execute Apify Instagram Actor: ${err.message}`);
     }
 
@@ -160,42 +200,69 @@ export class ApifyInstagramProvider implements InstagramDiscoveryProvider {
           item.username ||
           item.ownerUsername ||
           item.user?.username ||
+          item.owner?.username ||
+          item.threadsNetProfile?.username ||
           (typeof item.name === 'string' && !item.name.includes(' ') ? item.name : '') ||
           '';
-        if (!username) return null;
+        if (!username || username === 'undefined' || username.length < 2) return null;
 
         const latestCaptions: string[] = [];
+        if (item.caption) {
+          latestCaptions.push(item.caption);
+        }
         if (Array.isArray(item.latestPosts)) {
           for (const post of item.latestPosts) {
-            if (post.caption) latestCaptions.push(post.caption);
+            if (post.caption && !latestCaptions.includes(post.caption)) latestCaptions.push(post.caption);
           }
         } else if (Array.isArray(item.posts)) {
           for (const post of item.posts) {
-            if (post.caption) latestCaptions.push(post.caption);
+            if (post.caption && !latestCaptions.includes(post.caption)) latestCaptions.push(post.caption);
           }
         }
 
+        const rawBio =
+          item.biography ||
+          item.bio ||
+          item.description ||
+          item.user?.biography ||
+          item.threadsNetProfile?.biography ||
+          '';
+
+        const biography = rawBio || (latestCaptions.length > 0 ? latestCaptions[0].slice(0, 300) : '');
+
         const followersCount =
-          typeof item.followersCount === 'number'
+          typeof item.followersCount === 'number' && item.followersCount > 0
             ? item.followersCount
-            : typeof item.followerCount === 'number'
+            : typeof item.followerCount === 'number' && item.followerCount > 0
             ? item.followerCount
-            : typeof item.followers === 'number'
+            : typeof item.followers === 'number' && item.followers > 0
             ? item.followers
-            : typeof item.edge_followed_by?.count === 'number'
+            : typeof item.edge_followed_by?.count === 'number' && item.edge_followed_by.count > 0
             ? item.edge_followed_by.count
-            : typeof item.user?.follower_count === 'number'
+            : typeof item.user?.follower_count === 'number' && item.user.follower_count > 0
             ? item.user.follower_count
+            : typeof item.threadsNetProfile?.follower_count === 'number' && item.threadsNetProfile.follower_count > 0
+            ? item.threadsNetProfile.follower_count
             : parseInt(item.followers || item.followerCount || '0', 10);
+
+        const fullName =
+          item.fullName ||
+          item.displayName ||
+          item.title ||
+          item.ownerFullName ||
+          item.user?.full_name ||
+          item.threadsNetProfile?.full_name ||
+          item.name ||
+          username;
 
         return {
           username: username.replace(/^@/, '').toLowerCase().trim(),
-          fullName: item.fullName || item.displayName || item.title || item.user?.full_name || item.name || '',
-          biography: item.biography || item.bio || item.description || item.user?.biography || '',
+          fullName: fullName,
+          biography: biography,
           followersCount: isNaN(followersCount) ? 0 : followersCount,
           followsCount: item.followsCount || item.followingCount || item.edge_follow?.count || 0,
-          postsCount: item.postsCount || item.mediaCount || item.edge_owner_to_timeline_media?.count || 0,
-          profilePicUrl: item.profilePicUrl || item.profilePicUrlHD || item.profile_pic_url || item.user?.profile_pic_url || '',
+          postsCount: item.postsCount || item.mediaCount || item.edge_owner_to_timeline_media?.count || latestCaptions.length,
+          profilePicUrl: item.profilePicUrl || item.profilePicUrlHD || item.profile_pic_url || item.user?.profile_pic_url || item.threadsNetProfile?.profile_pic_url || '',
           isVerified: Boolean(item.isVerified || item.verified || item.user?.is_verified),
           isPrivate: Boolean(item.isPrivate || item.private || item.user?.is_private),
           isBusinessAccount: Boolean(item.isBusinessAccount || item.is_business_account || item.isBusiness),

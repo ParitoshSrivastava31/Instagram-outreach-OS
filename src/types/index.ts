@@ -52,6 +52,7 @@ export interface Lead {
   matched_niches: string[];
   status: LeadStatus;
   prepared_message?: string;
+  template_name?: string;
   campaign_id?: string;
   notes?: string;
   snoozed_until?: string | null;
