@@ -78,11 +78,10 @@ The most valuable prospects are **creator-operators, AI educators, and founders*
 1. Sign up at [Apify](https://apify.com) on the Free Tier ($5 free platform credits/month).
 
 ### 4. Select / Configure the Instagram Discovery Actor
-1. Go to the [Apify Store](https://apify.com/store).
-2. Search for `instagram-profile-scraper` (or `apify/instagram-profile-scraper` or `shu8hvr/instagram-scraper`).
-3. Set your chosen actor in your environment variables:
+1. The default recommended actor for keyword & creator discovery is **`apify/instagram-scraper`**.
+2. Set your chosen actor in your environment variables:
    ```env
-   APIFY_ACTOR_ID=apify/instagram-profile-scraper
+   APIFY_ACTOR_ID=apify/instagram-scraper
    ```
 
 ### 5. Create the Apify API Token
@@ -166,7 +165,7 @@ You can deploy the complete standalone Next.js app (frontend + API routes) direc
    - `ADMIN_EMAILS` = `your_email@example.com`
    - `ADMIN_PASSWORD` = `your_secret_dashboard_passcode` (e.g. `vault2026`)
    - `APIFY_API_TOKEN` = `your_apify_api_token`
-   - `APIFY_ACTOR_ID` = `apify/instagram-profile-scraper`
+   - `APIFY_ACTOR_ID` = `apify/instagram-scraper`
    - `APIFY_MONTHLY_BUDGET_USD` = `4.50`
    - `MAX_DAILY_QUALIFIED_LEADS` = `60`
    - `MAX_RAW_PROFILES_PER_RUN` = `150`
@@ -199,7 +198,7 @@ Verify your `.env.local` or Cloud Run environment variables match the table belo
 | `ADMIN_EMAILS` | Comma-separated admin emails | `paritosh@example.com` |
 | `ADMIN_PASSWORD` | Master passcode to unlock the dashboard | `vault2026` |
 | `APIFY_API_TOKEN` | Apify personal API access token | `apify_api_...` |
-| `APIFY_ACTOR_ID` | Instagram scraping actor ID | `apify/instagram-profile-scraper` |
+| `APIFY_ACTOR_ID` | Instagram scraping actor ID | `apify/instagram-scraper` |
 | `APIFY_MONTHLY_BUDGET_USD` | Monthly cost guardrail | `4.50` |
 | `MAX_DAILY_QUALIFIED_LEADS`| Daily qualified lead ceiling | `60` |
 | `MAX_RAW_PROFILES_PER_RUN` | Raw profile ceiling per run | `150` |

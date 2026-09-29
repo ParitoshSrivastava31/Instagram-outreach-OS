@@ -12,7 +12,7 @@ export class ApifyInstagramProvider implements InstagramDiscoveryProvider {
 
   constructor() {
     this.apiToken = process.env.APIFY_API_TOKEN || '';
-    this.actorId = process.env.APIFY_ACTOR_ID || 'apify/instagram-profile-scraper';
+    this.actorId = process.env.APIFY_ACTOR_ID || 'apify/instagram-scraper';
   }
 
   async searchProfiles(options: DiscoverySearchOptions): Promise<{
@@ -32,15 +32,32 @@ export class ApifyInstagramProvider implements InstagramDiscoveryProvider {
     const encodedActorId = encodeURIComponent(this.actorId);
     const startUrl = `https://api.apify.com/v2/acts/${encodedActorId}/runs?token=${this.apiToken}&waitForFinish=120`;
 
-    const inputPayload = {
-      search: searchQueries.join(' '),
-      searchType: 'user',
+    const isProfileActor = this.actorId.includes('profile-scraper');
+
+    // Extract potential usernames or profile URLs from queries
+    const extractedUsernames = searchQueries
+      .map(q => q.trim())
+      .map(q => q.replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/^@/, '').split('/')[0].split('?')[0])
+      .filter(q => q.length > 0 && !q.includes(' '));
+
+    const inputPayload: Record<string, any> = {
       resultsLimit: Math.min(maxResults, 150),
       searchLimit: Math.min(maxResults, 150),
-      directUrls: searchQueries.filter(q => q.startsWith('https://instagram.com/')),
       expandStories: false,
-      onlyPostsNewerThan: '60 days'
     };
+
+    if (isProfileActor) {
+      // Profile scraper strictly requires 'usernames'
+      inputPayload.usernames = extractedUsernames.length > 0 ? extractedUsernames : ['vault.moment'];
+    } else {
+      // General instagram-scraper handles keyword search
+      inputPayload.search = searchQueries.join(' ');
+      inputPayload.searchType = 'user';
+      inputPayload.resultsType = 'details';
+      if (extractedUsernames.length > 0) {
+        inputPayload.usernames = extractedUsernames;
+      }
+    }
 
     let runData: any;
     try {
