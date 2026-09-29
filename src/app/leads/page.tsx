@@ -301,7 +301,7 @@ export default function LeadsDatabasePage() {
                         )}
                         <div>
                           <div className="font-semibold text-zinc-950">@{lead.instagram_username}</div>
-                          <div className="text-[11px] text-zinc-500 truncate max-w-[160px]">
+                          <div className="text-[11px] text-zinc-500 truncate max-w-40">
                             {lead.display_name}
                           </div>
                         </div>
@@ -327,7 +327,7 @@ export default function LeadsDatabasePage() {
                       {lead.followers ? lead.followers.toLocaleString() : '—'}
                     </td>
                     <td className="p-3.5">
-                      <div className="flex flex-wrap gap-1 max-w-[220px]">
+                      <div className="flex flex-wrap gap-1 max-w-55">
                         {lead.matched_research.slice(0, 2).map(r => (
                           <span key={r} className="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-medium text-emerald-800 border border-emerald-200">
                             {r}
