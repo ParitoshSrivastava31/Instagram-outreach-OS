@@ -161,46 +161,31 @@ ALTER TABLE outreach_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE discovery_runs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE usage_tracking ENABLE ROW LEVEL SECURITY;
 
--- Create policy allowing authenticated and anon users access (and service role full access)
+-- Create policy allowing authenticated users access (and service role full access)
 CREATE POLICY "Allow authenticated read/write on campaigns" ON campaigns
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon read/write on campaigns" ON campaigns
-  FOR ALL TO anon USING (true) WITH CHECK (true);
 
 CREATE POLICY "Allow authenticated read/write on leads" ON leads
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon read/write on leads" ON leads
-  FOR ALL TO anon USING (true) WITH CHECK (true);
 
 CREATE POLICY "Allow authenticated read/write on campaign_leads" ON campaign_leads
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon read/write on campaign_leads" ON campaign_leads
-  FOR ALL TO anon USING (true) WITH CHECK (true);
 
 CREATE POLICY "Allow authenticated read/write on message_templates" ON message_templates
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon read/write on message_templates" ON message_templates
-  FOR ALL TO anon USING (true) WITH CHECK (true);
 
 CREATE POLICY "Allow authenticated read/write on sender_accounts" ON sender_accounts
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon read/write on sender_accounts" ON sender_accounts
-  FOR ALL TO anon USING (true) WITH CHECK (true);
 
 CREATE POLICY "Allow authenticated read/write on outreach_events" ON outreach_events
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon read/write on outreach_events" ON outreach_events
-  FOR ALL TO anon USING (true) WITH CHECK (true);
 
 CREATE POLICY "Allow authenticated read/write on discovery_runs" ON discovery_runs
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon read/write on discovery_runs" ON discovery_runs
-  FOR ALL TO anon USING (true) WITH CHECK (true);
 
 CREATE POLICY "Allow authenticated read/write on usage_tracking" ON usage_tracking
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon read/write on usage_tracking" ON usage_tracking
-  FOR ALL TO anon USING (true) WITH CHECK (true);
+
 
 
 -- 12. Seed Default Campaigns
@@ -378,5 +363,5 @@ CREATE TABLE IF NOT EXISTS auth_lockouts (
 );
 ALTER TABLE auth_lockouts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow service role all on auth_lockouts" ON auth_lockouts FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon all on auth_lockouts" ON auth_lockouts FOR ALL TO anon USING (true) WITH CHECK (true);
+
 
