@@ -83,11 +83,11 @@ export default function Navbar() {
                   <circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" />
                 </svg>
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-semibold tracking-tight text-zinc-900">
+              <div className="flex items-center gap-1.5 text-xs font-medium tracking-tight text-zinc-900">
                 <span>Vault</span>
                 <span className="text-zinc-300 font-normal">/</span>
                 <span className="text-zinc-500 font-normal">Outreach</span>
-                <span className="ml-1 rounded px-1.5 py-0.5 text-[10px] font-mono text-zinc-400 bg-zinc-100 border border-zinc-200/60 hidden sm:inline-block">
+                <span className="ml-1 rounded px-1.5 py-0.5 text-[10px] font-mono text-zinc-400 bg-zinc-100 border border-zinc-200/60 hidden sm:inline-block shrink-0 whitespace-nowrap">
                   @vault.moment
                 </span>
               </div>
@@ -105,7 +105,7 @@ export default function Navbar() {
                   href={item.href}
                   className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition ${
                     isActive
-                      ? 'bg-white text-zinc-950 font-semibold shadow-2xs border border-zinc-200/60'
+                      ? 'bg-white text-zinc-900 shadow-2xs border border-zinc-200/60'
                       : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50/60'
                   }`}
                 >
@@ -118,7 +118,7 @@ export default function Navbar() {
 
 
           {/* Right: Icon Utilities + Budget Telemetry */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
             {/* Secondary Tools as Clean Icon Buttons with Hover Tooltips (hidden on very small phones, accessible via bottom nav) */}
             <div className="hidden sm:flex items-center gap-1">
               <Tooltip label="Message Templates">
@@ -126,7 +126,7 @@ export default function Navbar() {
                   href="/templates"
                   className={`flex h-7 w-7 items-center justify-center rounded-md transition ${
                     pathname === '/templates'
-                      ? 'bg-zinc-100 text-zinc-900 font-semibold shadow-2xs'
+                      ? 'bg-zinc-100 text-zinc-900 font-medium shadow-2xs'
                       : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'
                   }`}
                 >
@@ -139,7 +139,7 @@ export default function Navbar() {
                   href="/analytics"
                   className={`flex h-7 w-7 items-center justify-center rounded-md transition ${
                     pathname === '/analytics'
-                      ? 'bg-zinc-100 text-zinc-900 font-semibold shadow-2xs'
+                      ? 'bg-zinc-100 text-zinc-900 font-medium shadow-2xs'
                       : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'
                   }`}
                 >
@@ -152,7 +152,7 @@ export default function Navbar() {
                   href="/settings"
                   className={`flex h-7 w-7 items-center justify-center rounded-md transition ${
                     pathname === '/settings'
-                      ? 'bg-zinc-100 text-zinc-900 font-semibold shadow-2xs'
+                      ? 'bg-zinc-100 text-zinc-900 font-medium shadow-2xs'
                       : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'
                   }`}
                 >
@@ -189,7 +189,7 @@ export default function Navbar() {
                   : 'Live Apify Provider Active'
               }
             >
-              <div className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-mono bg-zinc-50 border border-zinc-200/70 text-zinc-600 hover:bg-zinc-100 transition cursor-default">
+              <div className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-mono bg-zinc-50 border border-zinc-200/70 text-zinc-600 hover:bg-zinc-100 transition cursor-default shrink-0 whitespace-nowrap">
                 <span className="relative flex h-1.5 w-1.5">
                   <span
                     className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
@@ -216,10 +216,10 @@ export default function Navbar() {
                 budgetStatus ? budgetStatus.monthly_budget_usd.toFixed(2) : '4.50'
               } hard limit used`}
             >
-              <div className="flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-0.5 border border-zinc-200/70 font-mono hover:bg-zinc-100 transition cursor-default text-[10px] sm:text-[11px]">
+              <div className="flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-0.5 border border-zinc-200/70 font-mono hover:bg-zinc-100 transition cursor-default text-[10px] sm:text-[11px] shrink-0 whitespace-nowrap">
                 <span className="text-zinc-400">$</span>
                 <span
-                  className={`font-semibold ${
+                  className={`font-medium ${
                     budgetStatus?.is_budget_exceeded ? 'text-rose-600' : 'text-zinc-900'
                   }`}
                 >
@@ -252,17 +252,17 @@ export default function Navbar() {
               href={item.href}
               className={`flex flex-col items-center justify-center gap-0.5 py-1 px-3 rounded-xl transition ${
                 isActive
-                  ? 'text-zinc-950 font-bold'
+                  ? 'text-zinc-900 font-medium'
                   : 'text-zinc-400 hover:text-zinc-700'
               }`}
             >
               <div className="relative">
-                <Icon className={`h-4.5 w-4.5 transition-transform ${isActive ? 'text-zinc-950 scale-110' : 'text-zinc-400'}`} />
+                <Icon className={`h-4.5 w-4.5 transition-transform ${isActive ? 'text-zinc-950 scale-105' : 'text-zinc-400'}`} />
                 {isActive && (
                   <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-linear-to-r from-[#e1306c] to-[#fd1d1d]" />
                 )}
               </div>
-              <span className={`text-[10px] tracking-tight ${isActive ? 'text-zinc-950 font-bold' : 'text-zinc-500 font-medium'}`}>
+              <span className={`text-[10px] tracking-tight ${isActive ? 'text-zinc-900 font-medium' : 'text-zinc-500 font-normal'}`}>
                 {item.label}
               </span>
             </Link>

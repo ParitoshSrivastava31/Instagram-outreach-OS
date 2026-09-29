@@ -90,8 +90,8 @@ export default function SettingsPage() {
 
       {/* Header */}
       <div className="border-b border-zinc-200/80 pb-5">
-        <h1 className="text-lg font-semibold tracking-tight text-zinc-950">System Settings &amp; Integrations</h1>
-        <p className="mt-1 text-xs text-zinc-500 max-w-xl leading-relaxed">
+        <h1 className="text-lg font-medium tracking-tight text-zinc-900">System Settings &amp; Integrations</h1>
+        <p className="mt-1 text-xs text-zinc-500 max-w-xl leading-relaxed font-normal">
           Configure sender profile for Vault, review cost controls, and connect Meta reply webhook.
         </p>
       </div>
@@ -99,25 +99,25 @@ export default function SettingsPage() {
       <div className="mt-6 space-y-6">
         {/* 1. Sender Profile */}
         <div className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs">
-          <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 border-b border-zinc-100 pb-3.5">
             <div>
-              <h2 className="text-sm font-semibold text-zinc-950 flex items-center gap-1.5">
-                <Globe className="h-4 w-4 text-zinc-800" />
+              <h2 className="text-sm font-medium text-zinc-900 flex items-center gap-1.5">
+                <Globe className="h-4 w-4 text-zinc-700" />
                 <span>Founder Sender Account</span>
               </h2>
-              <p className="text-xs text-zinc-500 mt-0.5 leading-relaxed">
+              <p className="text-xs text-zinc-500 mt-0.5 leading-relaxed font-normal">
                 Used to interpolate &#123;&#123;sender_name&#125;&#125; and &#123;&#123;vault_username&#125;&#125; in outreach messages.
               </p>
             </div>
-            <span className="flex items-center gap-1 text-[10px] font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+            <span className="self-start sm:self-center inline-flex items-center gap-1.5 text-[10px] font-medium text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/80 shrink-0 whitespace-nowrap">
+              <ShieldCheck className="h-3 w-3 text-emerald-600" />
               <span>Zero Credentials Stored</span>
             </span>
           </div>
 
           <form onSubmit={handleSaveSender} className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="font-semibold text-zinc-700">Your First Name</label>
+              <label className="font-medium text-zinc-600">Your First Name</label>
               <input
                 type="text"
                 value={displayName}
@@ -127,7 +127,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="font-semibold text-zinc-700">Vault Instagram Handle</label>
+              <label className="font-medium text-zinc-600">Vault Instagram Handle</label>
               <div className="mt-1 flex items-center rounded-lg bg-zinc-50/60 border border-zinc-300 px-2.5">
                 <span className="text-zinc-400 font-mono">@</span>
                 <input
@@ -140,13 +140,13 @@ export default function SettingsPage() {
             </div>
 
             <div className="sm:col-span-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-              <span className="text-[11px] text-zinc-400 italic">
+              <span className="text-[11px] text-zinc-400 font-normal">
                 You will manually send each message in the official Instagram web interface.
               </span>
               <button
                 type="submit"
                 disabled={saving}
-                className="btn-insta rounded-lg px-4 py-2 text-xs font-semibold text-white transition shadow-2xs cursor-pointer w-full sm:w-auto"
+                className="btn-insta rounded-xl px-4 py-2.5 text-xs font-medium text-white transition shadow-xs cursor-pointer w-full sm:w-auto"
               >
                 {saving ? 'Saving...' : 'Save Sender Profile'}
               </button>
@@ -156,26 +156,26 @@ export default function SettingsPage() {
 
         {/* 2. Meta Instagram Messaging Webhook Setup (Auto Reply Tracking) */}
         <div className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs">
-          <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 border-b border-zinc-100 pb-3.5">
             <div>
-              <h2 className="text-sm font-semibold text-zinc-950 flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-rose-500" />
+              <h2 className="text-sm font-medium text-zinc-900 flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-rose-500 shrink-0" />
                 <span>Meta Official Messaging Webhook (Auto Reply Detection)</span>
               </h2>
-              <p className="text-xs text-zinc-500 mt-0.5 leading-relaxed">
+              <p className="text-xs text-zinc-500 mt-0.5 leading-relaxed font-normal">
                 Connect your Instagram Professional account via Meta Webhooks to detect replies automatically without sharing login credentials.
               </p>
             </div>
-            <span className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-[10px] font-mono font-medium text-zinc-600 border border-zinc-200/80">
+            <span className="self-start sm:self-center inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-[10px] font-mono font-medium text-zinc-600 border border-zinc-200/80 shrink-0 whitespace-nowrap">
               Official Meta Graph API
             </span>
           </div>
 
           <div className="mt-4 space-y-3 text-xs">
             <div className="rounded-xl bg-zinc-50/70 p-3.5 border border-zinc-200/80 shadow-2xs">
-              <div className="text-[10px] font-semibold text-zinc-400 uppercase">Webhook Callback URL</div>
+              <div className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">Webhook Callback URL</div>
               <div className="mt-1 flex items-center justify-between font-mono text-zinc-800">
-                <span className="truncate">https://&lt;your-app-domain&gt;/api/webhooks/instagram</span>
+                <span className="truncate pr-2">https://&lt;your-app-domain&gt;/api/webhooks/instagram</span>
                 <button
                   onClick={() => copyToClipboard('webhook', 'https://your-domain.com/api/webhooks/instagram')}
                   className="text-zinc-400 hover:text-zinc-700 cursor-pointer"
@@ -186,7 +186,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="rounded-xl bg-zinc-50/70 p-3.5 border border-zinc-200/80 shadow-2xs">
-              <div className="text-[10px] font-semibold text-zinc-400 uppercase">Webhook Verify Token (META_VERIFY_TOKEN)</div>
+              <div className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">Webhook Verify Token (META_VERIFY_TOKEN)</div>
               <div className="mt-1 flex items-center justify-between font-mono text-zinc-800">
                 <span>vault_outreach_meta_token_2026</span>
                 <button
@@ -198,35 +198,35 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="text-[11px] text-zinc-500 leading-relaxed">
-              <strong>Workflow:</strong> When a prospect DMs your account, Meta pushes an event to <code className="text-zinc-900 font-mono bg-zinc-100 px-1 py-0.5 rounded border border-zinc-200">/api/webhooks/instagram</code>, matching their Instagram handle and advancing their status from <strong>CONTACTED</strong> to <strong>REPLIED</strong> automatically.
+            <div className="text-[11px] text-zinc-500 leading-relaxed font-normal">
+              <strong className="font-medium text-zinc-700">Workflow:</strong> When a prospect DMs your account, Meta pushes an event to <code className="text-zinc-900 font-mono bg-zinc-100 px-1 py-0.5 rounded border border-zinc-200">/api/webhooks/instagram</code>, matching their Instagram handle and advancing their status from <strong>CONTACTED</strong> to <strong>REPLIED</strong> automatically.
             </div>
           </div>
         </div>
 
         {/* 3. Cost Controls & Guardrails */}
         <div className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs">
-          <h2 className="text-sm font-semibold text-zinc-950 flex items-center gap-1.5 border-b border-zinc-100 pb-3">
+          <h2 className="text-sm font-medium text-zinc-900 flex items-center gap-1.5 border-b border-zinc-100 pb-3">
             <DollarSign className="h-4 w-4 text-emerald-600" />
             <span>Server-Enforced Cost Guardrails ($0 Out-of-Pocket Target)</span>
           </h2>
 
           <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
             <div className="rounded-xl bg-zinc-50/70 p-3.5 border border-zinc-200/80">
-              <div className="text-zinc-500 font-medium">Monthly Budget Ceiling</div>
-              <div className="mt-1 font-mono text-base font-bold text-zinc-950">$4.50 USD</div>
+              <div className="text-zinc-500 font-normal">Monthly Budget Ceiling</div>
+              <div className="mt-1 font-mono text-base font-semibold text-zinc-900">$4.50 USD</div>
               <div className="text-[10px] text-zinc-400 mt-0.5">Stops runs if ceiling is met</div>
             </div>
 
             <div className="rounded-xl bg-zinc-50/70 p-3.5 border border-zinc-200/80">
-              <div className="text-zinc-500 font-medium">Daily Qualified Lead Cap</div>
-              <div className="mt-1 font-mono text-base font-bold text-zinc-950">60 Leads / Day</div>
+              <div className="text-zinc-500 font-normal">Daily Qualified Lead Cap</div>
+              <div className="mt-1 font-mono text-base font-semibold text-zinc-900">60 Leads / Day</div>
               <div className="text-[10px] text-zinc-400 mt-0.5">Enforces human focus</div>
             </div>
 
             <div className="rounded-xl bg-zinc-50/70 p-3.5 border border-zinc-200/80">
-              <div className="text-zinc-500 font-medium">Max Raw Profiles Scraped</div>
-              <div className="mt-1 font-mono text-base font-bold text-zinc-950">150 / Run</div>
+              <div className="text-zinc-500 font-normal">Max Raw Profiles Scraped</div>
+              <div className="mt-1 font-mono text-base font-semibold text-zinc-900">150 / Run</div>
               <div className="text-[10px] text-zinc-400 mt-0.5">Prevents runaway scrape jobs</div>
             </div>
           </div>
@@ -234,12 +234,12 @@ export default function SettingsPage() {
 
         {/* 4. Supabase Database & Persistence Status */}
         <div className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs">
-          <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-            <h2 className="text-sm font-semibold text-zinc-950 flex items-center gap-1.5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 border-b border-zinc-100 pb-3">
+            <h2 className="text-sm font-medium text-zinc-900 flex items-center gap-1.5">
               <Database className="h-4 w-4 text-indigo-600" />
               <span>Database & Cloud Persistence</span>
             </h2>
-            <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-mono font-medium border ${
+            <span className={`self-start sm:self-center inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-mono font-medium border shrink-0 whitespace-nowrap ${
               databaseStatus?.canWrite
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                 : databaseStatus?.configured
