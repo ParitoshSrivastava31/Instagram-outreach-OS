@@ -174,7 +174,7 @@ export default function CampaignsPage() {
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-1.5 rounded-lg bg-zinc-950 hover:bg-black px-3.5 py-2 text-xs font-semibold text-white transition shadow-2xs cursor-pointer"
+            className="btn-insta flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white transition shadow-2xs cursor-pointer w-full sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             <span>Create Custom Campaign</span>
@@ -299,7 +299,7 @@ export default function CampaignsPage() {
                 </button>
                 <Link
                   href={`/discovery?campaignId=${camp.id}`}
-                  className="flex items-center gap-1 rounded-lg bg-zinc-950 text-white hover:bg-black px-3 py-1.5 text-xs font-semibold transition shadow-2xs"
+                  className="btn-insta flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition shadow-2xs active:scale-95"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>Launch Discovery</span>
@@ -312,8 +312,8 @@ export default function CampaignsPage() {
 
       {/* EDIT CAMPAIGN MODAL */}
       {editingCampaign && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-xs p-4 animate-in fade-in duration-150 overflow-y-auto">
-          <form onSubmit={handleUpdateCampaign} className="w-full max-w-lg rounded-2xl bg-white p-6 border border-zinc-200 shadow-2xl my-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
+          <form onSubmit={handleUpdateCampaign} className="w-full max-w-lg rounded-2xl bg-white p-4 sm:p-6 border border-zinc-200 shadow-2xl my-auto max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
               <div>
                 <h3 className="text-base font-semibold text-zinc-950">Edit Campaign Settings</h3>
@@ -468,7 +468,7 @@ export default function CampaignsPage() {
               <button
                 type="submit"
                 disabled={savingEdit}
-                className="flex items-center gap-1.5 rounded-lg bg-zinc-950 px-4 py-1.5 text-xs font-semibold text-white hover:bg-black disabled:opacity-50 cursor-pointer"
+                className="btn-insta flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50 cursor-pointer shadow-xs active:scale-95"
               >
                 {savingEdit ? (
                   <div className="h-3.5 w-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -486,8 +486,8 @@ export default function CampaignsPage() {
 
       {/* CREATE CUSTOM CAMPAIGN MODAL */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <form onSubmit={handleCreateCampaign} className="w-full max-w-lg rounded-2xl bg-white p-6 border border-zinc-200 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
+          <form onSubmit={handleCreateCampaign} className="w-full max-w-lg rounded-2xl bg-white p-4 sm:p-6 border border-zinc-200 shadow-2xl my-auto max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
               <div>
                 <h3 className="text-base font-semibold text-zinc-950">Create Custom Prospect Campaign</h3>
@@ -502,7 +502,7 @@ export default function CampaignsPage() {
               </button>
             </div>
 
-            <div className="mt-4 space-y-3 text-xs">
+            <div className="mt-4 space-y-3 text-xs overflow-y-auto pr-1">
               <div>
                 <label className="font-semibold text-zinc-700">Campaign Name</label>
                 <input
@@ -573,7 +573,7 @@ export default function CampaignsPage() {
               </button>
               <button
                 type="submit"
-                className="rounded-lg bg-zinc-950 px-4 py-1.5 text-xs font-semibold text-white hover:bg-black cursor-pointer"
+                className="btn-insta rounded-lg px-4 py-1.5 text-xs font-semibold text-white cursor-pointer shadow-xs active:scale-95"
               >
                 Save Campaign
               </button>

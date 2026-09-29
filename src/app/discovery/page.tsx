@@ -345,12 +345,12 @@ export default function DiscoveryPage() {
             <button
               onClick={handleRunDiscovery}
               disabled={isRunning || isBudgetBlocked}
-              className={`mt-5 w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-white shadow-xs transition cursor-pointer active:scale-95 ${
+              className={`mt-5 w-full flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold shadow-xs transition cursor-pointer active:scale-95 ${
                 isBudgetBlocked
-                  ? 'bg-zinc-300 cursor-not-allowed text-zinc-500'
+                  ? 'bg-zinc-200 cursor-not-allowed text-zinc-400'
                   : isRunning
-                  ? 'bg-zinc-700 cursor-wait'
-                  : 'bg-zinc-950 hover:bg-black'
+                  ? 'bg-zinc-800 text-white cursor-wait'
+                  : 'btn-insta'
               }`}
             >
               <Sparkles className="h-4 w-4" />
@@ -431,7 +431,7 @@ export default function DiscoveryPage() {
               {runResult.runSummary.leadsAddedToQueue > 0 ? (
                 <Link
                   href="/"
-                  className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-zinc-950 hover:bg-black py-2.5 text-xs font-bold text-white transition shadow-2xs"
+                  className="mt-4 btn-insta flex w-full items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold text-white transition shadow-2xs"
                 >
                   <span>Process {runResult.runSummary.leadsAddedToQueue} Leads in Outreach Queue</span>
                   <ArrowRight className="h-3.5 w-3.5" />

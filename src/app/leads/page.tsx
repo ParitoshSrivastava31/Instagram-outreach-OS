@@ -146,10 +146,10 @@ export default function LeadsDatabasePage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-zinc-200/90 shadow-2xs">
-        <div className="flex flex-wrap items-center gap-2.5">
+      <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-zinc-200/90 shadow-2xs">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
           {/* Search */}
-          <div className="relative w-64">
+          <div className="relative w-full sm:w-64">
             <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-400" />
             <input
               type="text"
@@ -160,52 +160,54 @@ export default function LeadsDatabasePage() {
             />
           </div>
 
-          {/* Tier filter */}
-          <select
-            value={selectedTier}
-            onChange={e => setSelectedTier(e.target.value)}
-            className="rounded-lg bg-zinc-50/60 px-3 py-1.5 text-xs text-zinc-700 border border-zinc-200 focus:border-zinc-800 focus:bg-white focus:outline-none cursor-pointer"
-          >
-            <option value="ALL">All Tiers</option>
-            <option value="Tier A">Tier A (Creator-Operators)</option>
-            <option value="Tier B">Tier B (Knowledge Creators)</option>
-            <option value="Tier C">Tier C (Niche Experts)</option>
-          </select>
+          <div className="grid grid-cols-3 sm:flex items-center gap-2">
+            {/* Tier filter */}
+            <select
+              value={selectedTier}
+              onChange={e => setSelectedTier(e.target.value)}
+              className="rounded-lg bg-zinc-50/60 px-2 sm:px-3 py-1.5 text-xs text-zinc-700 border border-zinc-200 focus:border-zinc-800 focus:bg-white focus:outline-none cursor-pointer"
+            >
+              <option value="ALL">All Tiers</option>
+              <option value="Tier A">Tier A</option>
+              <option value="Tier B">Tier B</option>
+              <option value="Tier C">Tier C</option>
+            </select>
 
-          {/* Status filter */}
-          <select
-            value={selectedStatus}
-            onChange={e => setSelectedStatus(e.target.value)}
-            className="rounded-lg bg-zinc-50/60 px-3 py-1.5 text-xs text-zinc-700 border border-zinc-200 focus:border-zinc-800 focus:bg-white focus:outline-none cursor-pointer"
-          >
-            <option value="ALL">All Statuses</option>
-            <option value="QUEUED">Queued</option>
-            <option value="OPENED">Opened</option>
-            <option value="CONTACTED">Contacted (Sent)</option>
-            <option value="REPLIED">Replied</option>
-            <option value="USED_VAULT">Used Vault</option>
-            <option value="SENT_SECOND_REEL">Sent 2nd Reel ★</option>
-            <option value="PAID">Paid</option>
-            <option value="SKIPPED">Skipped</option>
-            <option value="SNOOZED">Snoozed</option>
-          </select>
+            {/* Status filter */}
+            <select
+              value={selectedStatus}
+              onChange={e => setSelectedStatus(e.target.value)}
+              className="rounded-lg bg-zinc-50/60 px-2 sm:px-3 py-1.5 text-xs text-zinc-700 border border-zinc-200 focus:border-zinc-800 focus:bg-white focus:outline-none cursor-pointer"
+            >
+              <option value="ALL">All Status</option>
+              <option value="QUEUED">Queued</option>
+              <option value="OPENED">Opened</option>
+              <option value="CONTACTED">Sent</option>
+              <option value="REPLIED">Replied</option>
+              <option value="USED_VAULT">Used Vault</option>
+              <option value="SENT_SECOND_REEL">2nd Reel</option>
+              <option value="PAID">Paid</option>
+              <option value="SKIPPED">Skipped</option>
+              <option value="SNOOZED">Snoozed</option>
+            </select>
 
-          {/* Min Score filter */}
-          <select
-            value={minScore}
-            onChange={e => setMinScore(parseInt(e.target.value, 10))}
-            className="rounded-lg bg-zinc-50/60 px-3 py-1.5 text-xs text-zinc-700 border border-zinc-200 focus:border-zinc-800 focus:bg-white focus:outline-none cursor-pointer"
-          >
-            <option value={0}>Any Score</option>
-            <option value={50}>Score ≥ 50</option>
-            <option value={70}>Score ≥ 70</option>
-            <option value={80}>Score ≥ 80</option>
-          </select>
+            {/* Min Score filter */}
+            <select
+              value={minScore}
+              onChange={e => setMinScore(parseInt(e.target.value, 10))}
+              className="rounded-lg bg-zinc-50/60 px-2 sm:px-3 py-1.5 text-xs text-zinc-700 border border-zinc-200 focus:border-zinc-800 focus:bg-white focus:outline-none cursor-pointer"
+            >
+              <option value={0}>Score</option>
+              <option value={50}>≥ 50 pts</option>
+              <option value={70}>≥ 70 pts</option>
+              <option value={80}>≥ 80 pts</option>
+            </select>
+          </div>
         </div>
 
         {/* Bulk Action Controls */}
         {selectedLeadIds.length > 0 && (
-          <div className="flex items-center gap-2 bg-zinc-100 px-3 py-1.5 rounded-xl border border-zinc-200">
+          <div className="flex flex-wrap items-center gap-2 bg-zinc-100 px-3 py-1.5 rounded-xl border border-zinc-200 w-full sm:w-auto">
             <span className="text-xs font-bold text-zinc-800">
               {selectedLeadIds.length} selected
             </span>
@@ -214,27 +216,120 @@ export default function LeadsDatabasePage() {
               className="rounded bg-zinc-950 hover:bg-black px-2.5 py-1 text-[11px] font-semibold text-white transition cursor-pointer flex items-center gap-1 shadow-2xs"
             >
               <Send className="h-3 w-3" />
-              <span>Send to Queue</span>
+              <span>Queue</span>
             </button>
             <button
               onClick={handleBulkSkip}
               className="rounded bg-rose-50 hover:bg-rose-100 px-2.5 py-1 text-[11px] font-semibold text-rose-700 border border-rose-200 transition cursor-pointer"
             >
-              Bulk Skip
+              Skip
             </button>
             <button
               onClick={() => handleBulkSnooze(3)}
               className="rounded bg-amber-50 hover:bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-800 border border-amber-200 transition cursor-pointer"
             >
-              Bulk Snooze (3d)
+              Snooze
             </button>
           </div>
         )}
       </div>
 
+      {/* Mobile Prospects Cards List (< md) */}
+      <div className="md:hidden mt-4 space-y-2.5">
+        {loading ? (
+          <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 text-center text-xs text-zinc-400">
+            Loading prospects...
+          </div>
+        ) : leads.length === 0 ? (
+          <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 text-center text-xs text-zinc-400">
+            No leads found matching your criteria.
+          </div>
+        ) : (
+          leads.map(lead => {
+            const isSelected = selectedLeadIds.includes(lead.id);
+            return (
+              <div
+                key={lead.id}
+                onClick={() => setActiveLead(lead)}
+                className="rounded-xl border border-zinc-200/90 bg-white p-3.5 shadow-2xs hover:border-zinc-300 transition cursor-pointer text-left"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div onClick={e => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSelectLead(lead.id)}
+                        className="rounded border-zinc-300 text-zinc-900 focus:ring-0 mr-1"
+                      />
+                    </div>
+                    {lead.profile_image_url ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={lead.profile_image_url}
+                        alt={lead.instagram_username}
+                        className="h-8 w-8 rounded-full object-cover border border-zinc-200 shrink-0"
+                      />
+                    ) : (
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-xs font-bold text-zinc-700 border border-zinc-200">
+                        {lead.instagram_username.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="font-semibold text-zinc-950 text-xs truncate">
+                        @{lead.instagram_username}
+                      </div>
+                      <div className="text-[10px] text-zinc-500 truncate">
+                        {lead.display_name || 'Creator'}
+                      </div>
+                    </div>
+                  </div>
 
-      {/* Leads Table */}
-      <div className="mt-4 overflow-x-auto rounded-2xl border border-zinc-200/90 bg-white shadow-2xs">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span
+                      className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${
+                        lead.lead_tier === 'Tier A'
+                          ? 'badge-tier-a'
+                          : lead.lead_tier === 'Tier B'
+                          ? 'badge-tier-b'
+                          : 'badge-tier-c'
+                      }`}
+                    >
+                      {lead.lead_tier}
+                    </span>
+                    <span className="font-mono text-[10px] font-semibold text-zinc-700 bg-zinc-100 px-1.5 py-0.5 rounded border border-zinc-200">
+                      {lead.lead_score} pts
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-2.5 flex items-center justify-between text-[11px] pt-2 border-t border-zinc-100">
+                  <div className="text-zinc-500 font-mono text-[10px]">
+                    {lead.followers ? `${(lead.followers / 1000).toFixed(1)}k followers` : '< 1k'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`rounded px-2 py-0.5 text-[9px] font-bold uppercase ${
+                        lead.status === 'CONTACTED'
+                          ? 'badge-status-contacted'
+                          : lead.status === 'REPLIED'
+                          ? 'badge-status-replied'
+                          : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
+                      }`}
+                    >
+                      {lead.status}
+                    </span>
+                    <ChevronRight className="h-4 w-4 text-zinc-400" />
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Desktop Leads Table (md+) */}
+      <div className="hidden md:block mt-4 overflow-x-auto rounded-2xl border border-zinc-200/90 bg-white shadow-2xs">
         <table className="w-full text-left text-xs text-zinc-700">
           <thead className="border-b border-zinc-200/80 bg-zinc-50/60 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
             <tr>
@@ -420,7 +515,7 @@ export default function LeadsDatabasePage() {
                 {activeLead.status !== 'QUEUED' && (
                   <button
                     onClick={() => handleSingleQueue(activeLead.id)}
-                    className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-zinc-950 hover:bg-black py-2.5 font-semibold text-white transition shadow-2xs cursor-pointer"
+                    className="w-full btn-insta flex items-center justify-center gap-1.5 rounded-xl py-2.5 font-semibold text-white transition shadow-2xs cursor-pointer"
                   >
                     <Send className="h-3.5 w-3.5" />
                     <span>Send Lead to Today&apos;s Outreach Queue</span>

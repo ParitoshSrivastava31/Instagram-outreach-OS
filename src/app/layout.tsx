@@ -29,9 +29,10 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="bg-[#fafafa] text-zinc-900 antialiased min-h-screen flex flex-col font-sans selection:bg-zinc-900 selection:text-white">
         <Navbar />
-        <main className="flex-1 pb-16">
+        <main className="flex-1 pb-mobile-nav md:pb-16">
           {children}
         </main>
+
       </body>
     </html>
   );

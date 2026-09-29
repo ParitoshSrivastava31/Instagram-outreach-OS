@@ -77,7 +77,7 @@ export default function AnalyticsPage() {
               The true validation signal is whether a creator actually sent a Reel to @vault.moment, and then sent a 2nd Reel organically.
             </p>
 
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
               <div className="rounded-xl bg-zinc-50/70 p-3.5 border border-zinc-200/80">
                 <div className="text-zinc-500 font-medium">1. Contacted</div>
                 <div className="text-lg font-bold font-mono text-zinc-900 mt-1">{stats.messagesSent}</div>
