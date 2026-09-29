@@ -12,8 +12,10 @@ import {
   CheckCircle2,
   XCircle,
   ArrowRight,
-  DollarSign
+  DollarSign,
+  Info
 } from 'lucide-react';
+
 import { Campaign, MonthlyBudgetStatus } from '@/types';
 
 export default function DiscoveryPage() {
@@ -30,6 +32,13 @@ export default function DiscoveryPage() {
   // Follower range configuration
   const [minFollowers, setMinFollowers] = useState(1000);
   const [maxFollowers, setMaxFollowers] = useState(20000);
+  const [databaseStatus, setDatabaseStatus] = useState<{
+    configured: boolean;
+    canRead: boolean;
+    canWrite: boolean;
+    keyRole: string;
+    error?: string;
+  } | null>(null);
 
   useEffect(() => {
     fetch('/api/campaigns')
@@ -46,10 +55,12 @@ export default function DiscoveryPage() {
         if (data.success) {
           setBudgetStatus(data.budgetStatus);
           setProviderInfo(data.provider);
+          if (data.databaseStatus) setDatabaseStatus(data.databaseStatus);
           if (data.provider.isMock) setForceMock(true);
         }
       });
   }, []);
+
 
   const activeCampaign = campaigns.find(c => c.id === selectedCampaignId) || campaigns[0];
 
@@ -358,6 +369,19 @@ export default function DiscoveryPage() {
             </div>
           )}
 
+          {/* Supabase RLS Warning Banner */}
+          {databaseStatus && !databaseStatus.canWrite && (
+            <div className="rounded-2xl border border-amber-200/90 bg-amber-50/60 p-4 text-xs text-amber-900 shadow-2xs">
+              <div className="flex items-center gap-1.5 font-bold text-amber-950">
+                <Info className="h-4 w-4 text-amber-600 shrink-0" />
+                <span>Supabase Persistence Notice</span>
+              </div>
+              <p className="mt-1 text-[11px] leading-relaxed text-amber-800">
+                Row Level Security is enabled on Supabase while using an anon key, so writes are safely held in memory. For permanent cloud storage, run the disable RLS SQL in Supabase or set the service_role key.
+              </p>
+            </div>
+          )}
+
           {/* Post-Run Results Summary */}
           {runResult && (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-5 shadow-xs">
@@ -403,15 +427,44 @@ export default function DiscoveryPage() {
                 </div>
               </div>
 
-              <Link
-                href="/"
-                className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-zinc-950 hover:bg-black py-2.5 text-xs font-bold text-white transition shadow-2xs"
-              >
-                <span>Process Leads in Outreach Queue</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
+              {/* Dynamic Actions based on whether new leads were added */}
+              {runResult.runSummary.leadsAddedToQueue > 0 ? (
+                <Link
+                  href="/"
+                  className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-zinc-950 hover:bg-black py-2.5 text-xs font-bold text-white transition shadow-2xs"
+                >
+                  <span>Process {runResult.runSummary.leadsAddedToQueue} Leads in Outreach Queue</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              ) : (
+                <div className="mt-3.5 space-y-2">
+                  <div className="rounded-xl bg-white/90 p-2.5 border border-zinc-200/80 text-[11px] text-zinc-600 leading-relaxed">
+                    <span className="font-semibold text-zinc-900">0 new leads added to queue. </span>
+                    {runResult.runSummary.profilesAlreadyKnown > 0
+                      ? `${runResult.runSummary.profilesAlreadyKnown} matching profiles were already saved in your database previously.`
+                      : 'All discovered profiles were outside follower thresholds or disqualified.'}
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Link
+                      href="/leads"
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-zinc-950 hover:bg-black py-2.5 text-xs font-bold text-white transition shadow-2xs"
+                    >
+                      <Users className="h-3.5 w-3.5" />
+                      <span>View Database Leads</span>
+                    </Link>
+                    <Link
+                      href="/"
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-white hover:bg-zinc-50 border border-zinc-200/90 py-2 text-xs font-semibold text-zinc-800 transition shadow-2xs"
+                    >
+                      <span>Open Queue</span>
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           )}
+
         </div>
       </div>
     </div>

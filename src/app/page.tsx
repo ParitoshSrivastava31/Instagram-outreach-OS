@@ -494,30 +494,69 @@ export default function OutreachPage() {
                 <div className="flex h-12 w-12 mx-auto items-center justify-center rounded-2xl bg-zinc-50 border border-zinc-200/80 text-zinc-400 shadow-2xs">
                   <Inbox className="h-6 w-6" />
                 </div>
-                <h3 className="mt-3.5 text-sm font-semibold text-zinc-950">Queue is clear</h3>
-                <p className="mt-1.5 text-xs text-zinc-500 max-w-xs mx-auto leading-relaxed">
-                  No prospects are pending in this filter view. Launch discovery to scan for creators who save Reels for research, or load sandbox test leads to preview the workflow.
+                <h3 className="mt-3.5 text-sm font-semibold text-zinc-950">
+                  {leads.length > 0 ? 'No leads in this filter' : 'Queue is clear'}
+                </h3>
+                <p className="mt-1.5 text-xs text-zinc-500 max-w-sm mx-auto leading-relaxed">
+                  {leads.length > 0 ? (
+                    <>
+                      You have <span className="font-semibold text-zinc-900 font-mono">{leads.length}</span> total leads registered in your database ({contactedCount} contacted, {repliedCount} replied), but none currently match the <span className="font-medium text-zinc-800">&quot;{filterTab}&quot;</span> tab.
+                    </>
+                  ) : (
+                    'No prospects are pending in the queue. Launch discovery to scan for creators who save Reels for research, or load sandbox test leads to preview the workflow.'
+                  )}
                 </p>
-                <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-2">
-                  <Link
-                    href="/discovery"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg bg-zinc-950 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-black transition shadow-xs cursor-pointer"
-                  >
-                    <Sparkles className="h-3.5 w-3.5" />
-                    <span>Launch Discovery</span>
-                  </Link>
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+                  {leads.length > 0 ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          setFilterTab('ALL');
+                          setSelectedIndex(0);
+                        }}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-zinc-950 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-black transition shadow-xs cursor-pointer"
+                      >
+                        <Users className="h-3.5 w-3.5" />
+                        <span>View All Leads ({leads.length})</span>
+                      </button>
+                      <Link
+                        href="/leads"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-zinc-50 hover:bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 border border-zinc-200 transition cursor-pointer"
+                      >
+                        <span>Database View</span>
+                      </Link>
+                      <Link
+                        href="/discovery"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-zinc-50 hover:bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 border border-zinc-200 transition cursor-pointer"
+                      >
+                        <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                        <span>Scan Fresh Leads</span>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/discovery"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg bg-zinc-950 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-black transition shadow-xs cursor-pointer"
+                      >
+                        <Sparkles className="h-3.5 w-3.5" />
+                        <span>Launch Discovery</span>
+                      </Link>
 
-                  <button
-                    onClick={handleRunSandboxTest}
-                    disabled={isTestLoading}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg bg-zinc-50 hover:bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 border border-zinc-200 transition cursor-pointer"
-                  >
-                    <Zap className="h-3.5 w-3.5 text-amber-500" />
-                    <span>{isTestLoading ? 'Loading Leads...' : 'Test Sandbox Scan'}</span>
-                  </button>
+                      <button
+                        onClick={handleRunSandboxTest}
+                        disabled={isTestLoading}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg bg-zinc-50 hover:bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 border border-zinc-200 transition cursor-pointer"
+                      >
+                        <Zap className="h-3.5 w-3.5 text-amber-500" />
+                        <span>{isTestLoading ? 'Loading Leads...' : 'Test Sandbox Scan'}</span>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             ) : (
+
               filteredLeads.map((lead, idx) => {
                 const isSelected = idx === selectedIndex;
                 const isTierA = lead.lead_tier === 'Tier A';
