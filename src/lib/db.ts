@@ -271,6 +271,9 @@ export async function getLeads(filters?: {
   minScore?: number;
   limit?: number;
 }): Promise<Lead[]> {
+  let supabaseLeads: Lead[] = [];
+  let supabaseQueried = false;
+
   if (isSupabaseConfigured && supabaseServer) {
     try {
       let query = supabaseServer.from('leads').select('*');
@@ -284,29 +287,34 @@ export async function getLeads(filters?: {
         .order('lead_score', { ascending: false })
         .limit(filters?.limit || 100);
 
-      if (!error && data) return data as Lead[];
+      if (!error && data) {
+        supabaseLeads = data as Lead[];
+        supabaseQueried = true;
+      } else if (error) {
+        console.warn('[DB] Supabase getLeads error, fallback to memory:', error.message);
+      }
     } catch (e) {
-      console.warn('[DB] Supabase getLeads error, fallback to memory', e);
+      console.warn('[DB] Supabase getLeads exception, fallback to memory', e);
     }
   }
 
-  let results = [...memoryStore.leads];
+  let memResults = [...memoryStore.leads];
 
   if (filters?.status && filters.status !== 'ALL') {
-    results = results.filter(l => l.status === filters.status);
+    memResults = memResults.filter(l => l.status === filters.status);
   }
   if (filters?.tier && filters.tier !== 'ALL') {
-    results = results.filter(l => l.lead_tier === filters.tier);
+    memResults = memResults.filter(l => l.lead_tier === filters.tier);
   }
   if (filters?.campaignId && filters.campaignId !== 'ALL') {
-    results = results.filter(l => l.campaign_id === filters.campaignId);
+    memResults = memResults.filter(l => l.campaign_id === filters.campaignId);
   }
   if (filters?.minScore) {
-    results = results.filter(l => l.lead_score >= filters.minScore!);
+    memResults = memResults.filter(l => l.lead_score >= filters.minScore!);
   }
   if (filters?.search) {
     const q = filters.search.toLowerCase();
-    results = results.filter(
+    memResults = memResults.filter(
       l =>
         l.instagram_username.toLowerCase().includes(q) ||
         (l.display_name && l.display_name.toLowerCase().includes(q)) ||
@@ -314,11 +322,25 @@ export async function getLeads(filters?: {
     );
   }
 
-  // Sort by score descending
-  results.sort((a, b) => b.lead_score - a.lead_score);
+  // If Supabase returned data, merge with any in-memory leads not yet in Supabase
+  if (supabaseQueried && supabaseLeads.length > 0) {
+    const knownHandles = new Set(supabaseLeads.map(l => l.instagram_username.toLowerCase()));
+    const uncommittedMem = memResults.filter(l => !knownHandles.has(l.instagram_username.toLowerCase()));
+    const combined = [...supabaseLeads, ...uncommittedMem];
+    combined.sort((a, b) => b.lead_score - a.lead_score);
+    return combined.slice(0, filters?.limit || 100);
+  }
 
-  return results.slice(0, filters?.limit || 100);
+  // If Supabase returned 0 leads (e.g. table is empty or RLS prevented write) but memoryStore has leads,
+  // return memoryStore leads so prospects are never hidden from the user
+  if (memResults.length > 0) {
+    memResults.sort((a, b) => b.lead_score - a.lead_score);
+    return memResults.slice(0, filters?.limit || 100);
+  }
+
+  return supabaseLeads.slice(0, filters?.limit || 100);
 }
+
 
 export async function getLeadById(id: string): Promise<Lead | null> {
   if (isSupabaseConfigured && supabaseServer) {
@@ -391,9 +413,17 @@ export async function upsertLead(lead: Partial<Lead> & { instagram_username: str
         .upsert(leadData, { onConflict: 'instagram_username' })
         .select()
         .single();
-      if (!error && data) return data as Lead;
+      if (!error && data) {
+        const idx = memoryStore.leads.findIndex(l => l.instagram_username.toLowerCase() === cleanUsername);
+        if (idx >= 0) memoryStore.leads[idx] = data as Lead;
+        else memoryStore.leads.unshift(data as Lead);
+        return data as Lead;
+      }
+      if (error) {
+        console.warn(`[DB] Supabase upsert error for @${cleanUsername}:`, error.message, error.code);
+      }
     } catch (e) {
-      console.warn('[DB] Supabase upsert error, falling back to memory', e);
+      console.warn('[DB] Supabase upsert exception, falling back to memory', e);
     }
   }
 
@@ -590,10 +620,29 @@ export async function recordRunUsage(costUsd: number, qualifiedCount: number): P
 }
 
 export async function getDiscoveryRuns(): Promise<DiscoveryRun[]> {
+  if (isSupabaseConfigured && supabaseServer) {
+    try {
+      const { data, error } = await supabaseServer
+        .from('discovery_runs')
+        .select('*')
+        .order('started_at', { ascending: false })
+        .limit(20);
+      if (!error && data && data.length > 0) return data as DiscoveryRun[];
+    } catch (e) {
+      console.warn('[DB] Supabase getDiscoveryRuns error', e);
+    }
+  }
   return memoryStore.runs;
 }
 
 export async function saveDiscoveryRun(run: DiscoveryRun): Promise<void> {
+  if (isSupabaseConfigured && supabaseServer) {
+    try {
+      await supabaseServer.from('discovery_runs').insert(run);
+    } catch (e) {
+      console.warn('[DB] Supabase saveDiscoveryRun error', e);
+    }
+  }
   memoryStore.runs.unshift(run);
 }
 
@@ -615,7 +664,8 @@ export async function getAnalyticsSummary(): Promise<{
   repliesByTemplate: { templateName: string; count: number }[];
   avgScoreReplied: number;
 }> {
-  const allLeads = memoryStore.leads;
+  const allLeads = await getLeads({ status: 'ALL', limit: 10000 });
+
   const qualified = allLeads.filter(l => l.lead_tier !== 'Disqualified');
   const tierA = allLeads.filter(l => l.lead_tier === 'Tier A').length;
   const tierB = allLeads.filter(l => l.lead_tier === 'Tier B').length;

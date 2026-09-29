@@ -62,6 +62,34 @@ export default function LeadsDatabasePage() {
     );
   };
 
+  const handleBulkQueue = async () => {
+    if (selectedLeadIds.length === 0) return;
+    for (const id of selectedLeadIds) {
+      await fetch(`/api/leads/${id}/queue`, { method: 'POST' });
+    }
+    setBulkNotice(`Added ${selectedLeadIds.length} leads to Today's Queue!`);
+    setSelectedLeadIds([]);
+    fetchLeads();
+    setTimeout(() => setBulkNotice(null), 3000);
+  };
+
+  const handleSingleQueue = async (leadId: string) => {
+    try {
+      const res = await fetch(`/api/leads/${leadId}/queue`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        setBulkNotice('Lead added to Today\'s Queue!');
+        if (activeLead && activeLead.id === leadId) {
+          setActiveLead({ ...activeLead, status: 'QUEUED' });
+        }
+        fetchLeads();
+        setTimeout(() => setBulkNotice(null), 3000);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const handleBulkSkip = async () => {
     if (selectedLeadIds.length === 0) return;
     for (const id of selectedLeadIds) {
@@ -87,6 +115,7 @@ export default function LeadsDatabasePage() {
     fetchLeads();
     setTimeout(() => setBulkNotice(null), 3000);
   };
+
 
   return (
     <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6">
@@ -181,6 +210,13 @@ export default function LeadsDatabasePage() {
               {selectedLeadIds.length} selected
             </span>
             <button
+              onClick={handleBulkQueue}
+              className="rounded bg-zinc-950 hover:bg-black px-2.5 py-1 text-[11px] font-semibold text-white transition cursor-pointer flex items-center gap-1 shadow-2xs"
+            >
+              <Send className="h-3 w-3" />
+              <span>Send to Queue</span>
+            </button>
+            <button
               onClick={handleBulkSkip}
               className="rounded bg-rose-50 hover:bg-rose-100 px-2.5 py-1 text-[11px] font-semibold text-rose-700 border border-rose-200 transition cursor-pointer"
             >
@@ -192,10 +228,10 @@ export default function LeadsDatabasePage() {
             >
               Bulk Snooze (3d)
             </button>
-            <span className="text-[10px] text-zinc-400 italic">(Manual send required for safety)</span>
           </div>
         )}
       </div>
+
 
       {/* Leads Table */}
       <div className="mt-4 overflow-x-auto rounded-2xl border border-zinc-200/90 bg-white shadow-2xs">
@@ -380,26 +416,38 @@ export default function LeadsDatabasePage() {
                 </p>
               </div>
 
-              <div className="pt-2 flex items-center gap-3">
-                <a
-                  href={activeLead.instagram_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-zinc-950 hover:bg-black py-2.5 font-semibold text-white transition shadow-2xs"
-                >
-                  <span>Open Profile</span>
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-                <a
-                  href={`https://ig.me/m/${activeLead.instagram_username}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 py-2.5 font-semibold text-indigo-700 border border-indigo-200 transition"
-                >
-                  <span>Open Instagram DM</span>
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
+              <div className="pt-2 flex flex-col gap-2">
+                {activeLead.status !== 'QUEUED' && (
+                  <button
+                    onClick={() => handleSingleQueue(activeLead.id)}
+                    className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-zinc-950 hover:bg-black py-2.5 font-semibold text-white transition shadow-2xs cursor-pointer"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                    <span>Send Lead to Today&apos;s Outreach Queue</span>
+                  </button>
+                )}
+                <div className="flex items-center gap-3">
+                  <a
+                    href={activeLead.instagram_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-900 py-2.5 font-semibold transition shadow-2xs border border-zinc-200/80"
+                  >
+                    <span>Open Profile</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                  <a
+                    href={`https://ig.me/m/${activeLead.instagram_username}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 py-2.5 font-semibold text-indigo-700 border border-indigo-200 transition"
+                  >
+                    <span>Open Instagram DM</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </div>
               </div>
+
             </div>
           </div>
         </div>

@@ -3,9 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import {
   Globe,
+
   DollarSign,
   ShieldCheck,
-  Copy
+  Copy,
+  Database,
+  CheckCircle2,
+  AlertTriangle,
+  ExternalLink,
+  Info
 } from 'lucide-react';
 import { SenderAccount } from '@/types';
 
@@ -16,18 +22,31 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [savedNotice, setSavedNotice] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [databaseStatus, setDatabaseStatus] = useState<{
+    configured: boolean;
+    canRead: boolean;
+    canWrite: boolean;
+    keyRole: string;
+    error?: string;
+  } | null>(null);
 
   useEffect(() => {
     fetch('/api/settings')
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.sender) {
-          setSender(data.sender);
-          setDisplayName(data.sender.display_name || 'Paritosh');
-          setUsername(data.sender.instagram_username || 'vault.moment');
+        if (data.success) {
+          if (data.sender) {
+            setSender(data.sender);
+            setDisplayName(data.sender.display_name || 'Paritosh');
+            setUsername(data.sender.instagram_username || 'vault.moment');
+          }
+          if (data.databaseStatus) {
+            setDatabaseStatus(data.databaseStatus);
+          }
         }
       });
   }, []);
+
 
   const handleSaveSender = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -212,6 +231,86 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* 4. Supabase Database & Persistence Status */}
+        <div className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs">
+          <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+            <h2 className="text-sm font-semibold text-zinc-950 flex items-center gap-1.5">
+              <Database className="h-4 w-4 text-indigo-600" />
+              <span>Database & Cloud Persistence</span>
+            </h2>
+            <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-mono font-medium border ${
+              databaseStatus?.canWrite
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                : databaseStatus?.configured
+                ? 'bg-amber-50 text-amber-700 border-amber-200'
+                : 'bg-zinc-100 text-zinc-600 border-zinc-200'
+            }`}>
+              {databaseStatus?.canWrite ? 'Connected & Writable' : databaseStatus?.configured ? 'RLS Protected (Memory Fallback Active)' : 'In-Memory Only'}
+            </span>
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="rounded-xl bg-zinc-50/70 p-3.5 border border-zinc-200/80">
+              <div className="text-zinc-500 font-medium">Supabase URL</div>
+              <div className="mt-1 font-mono text-xs font-bold text-zinc-900 truncate">
+                {databaseStatus?.configured ? 'Connected' : 'Not configured'}
+              </div>
+              <div className="text-[10px] text-zinc-400 mt-0.5">PostgreSQL cloud instance</div>
+            </div>
+
+            <div className="rounded-xl bg-zinc-50/70 p-3.5 border border-zinc-200/80">
+              <div className="text-zinc-500 font-medium">Server Key Role</div>
+              <div className="mt-1 font-mono text-xs font-bold text-zinc-900">
+                {databaseStatus?.keyRole === 'service_role' ? 'service_role (Secret)' : databaseStatus?.keyRole === 'anon' ? 'anon (Public Key)' : 'Unknown'}
+              </div>
+              <div className="text-[10px] text-zinc-400 mt-0.5">Determines RLS bypass authority</div>
+            </div>
+
+            <div className="rounded-xl bg-zinc-50/70 p-3.5 border border-zinc-200/80">
+              <div className="text-zinc-500 font-medium">Write Permission</div>
+              <div className="mt-1 font-mono text-xs font-bold flex items-center gap-1">
+                {databaseStatus?.canWrite ? (
+                  <span className="text-emerald-700 flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Active
+                  </span>
+                ) : (
+                  <span className="text-amber-700 flex items-center gap-1">
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-600" /> RLS Blocked
+                  </span>
+                )}
+              </div>
+              <div className="text-[10px] text-zinc-400 mt-0.5">
+                {databaseStatus?.canWrite ? 'All writes save directly to PostgreSQL' : 'Writes fallback to in-memory store'}
+              </div>
+            </div>
+          </div>
+
+          {databaseStatus?.configured && !databaseStatus.canWrite && (
+            <div className="mt-4 rounded-xl bg-amber-50/80 p-4 border border-amber-200/80 text-xs">
+              <div className="font-semibold text-amber-950 flex items-center gap-1.5">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <span>Fix Supabase Write Access (30 Seconds)</span>
+              </div>
+              <p className="mt-1 text-amber-800 leading-relaxed text-[11px]">
+                Your <code className="bg-amber-100 px-1 py-0.5 rounded font-mono text-amber-950">SUPABASE_SERVICE_ROLE_KEY</code> is currently set to an <code className="font-semibold">anon</code> key, so Supabase blocks direct writes. To permanently store leads in Supabase:
+              </p>
+              <div className="mt-2.5 rounded-lg bg-zinc-900 p-2.5 font-mono text-[11px] text-zinc-100 flex items-center justify-between">
+                <span className="truncate pr-2">ALTER TABLE leads DISABLE ROW LEVEL SECURITY; ALTER TABLE campaigns DISABLE ROW LEVEL SECURITY;</span>
+                <button
+                  onClick={() => copyToClipboard('rls_sql', 'ALTER TABLE leads DISABLE ROW LEVEL SECURITY; ALTER TABLE campaigns DISABLE ROW LEVEL SECURITY; ALTER TABLE campaign_leads DISABLE ROW LEVEL SECURITY; ALTER TABLE message_templates DISABLE ROW LEVEL SECURITY; ALTER TABLE sender_accounts DISABLE ROW LEVEL SECURITY; ALTER TABLE outreach_events DISABLE ROW LEVEL SECURITY; ALTER TABLE discovery_runs DISABLE ROW LEVEL SECURITY; ALTER TABLE usage_tracking DISABLE ROW LEVEL SECURITY; ALTER TABLE auth_lockouts DISABLE ROW LEVEL SECURITY;')}
+                  className="rounded bg-zinc-800 hover:bg-zinc-700 px-2 py-1 text-[10px] font-semibold text-zinc-200 shrink-0 cursor-pointer"
+                >
+                  {copiedKey === 'rls_sql' ? 'Copied SQL!' : 'Copy SQL'}
+                </button>
+              </div>
+              <div className="mt-2 text-[10px] text-amber-700">
+                Run this SQL in your Supabase Dashboard &rarr; <strong>SQL Editor</strong>, or copy the secret <strong>service_role</strong> key from Supabase Project Settings &rarr; API into Cloud Run.
+              </div>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );

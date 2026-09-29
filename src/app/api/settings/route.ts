@@ -1,17 +1,21 @@
 import { NextResponse } from 'next/server';
 import { getSenderAccount, updateSenderAccount } from '@/lib/db';
+import { checkSupabaseHealth } from '@/lib/supabase';
 
 export async function GET() {
   try {
     const sender = await getSenderAccount();
+    const databaseStatus = await checkSupabaseHealth();
     return NextResponse.json({
       success: true,
       sender,
+      databaseStatus,
       budgetCeilingUsd: parseFloat(process.env.APIFY_MONTHLY_BUDGET_USD || '4.50'),
       hasApifyToken: Boolean(process.env.APIFY_API_TOKEN),
-      apifyActorId: process.env.APIFY_ACTOR_ID || 'apify/instagram-profile-scraper',
+      apifyActorId: process.env.APIFY_ACTOR_ID || 'apify/instagram-scraper',
       hasMetaWebhook: Boolean(process.env.META_VERIFY_TOKEN)
     });
+
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
