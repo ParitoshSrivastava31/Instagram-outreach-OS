@@ -103,8 +103,9 @@ export async function POST(req: Request) {
       const existing = await getLeadByUsername(username);
       if (existing) {
         alreadyKnownCount++;
-        // If already queued or contacted, don't overwrite
-        if (existing.lead_tier !== 'Disqualified') {
+        // Skip any lead that was already actioned (only re-evaluate auto-rejected Disqualified leads)
+        const skipStatuses = ['QUEUED', 'OPENED', 'CONTACTED', 'REPLIED', 'INTERESTED', 'USED_VAULT', 'SENT_SECOND_REEL', 'PAID', 'SKIPPED', 'SNOOZED'];
+        if (skipStatuses.includes(existing.status)) {
           continue;
         }
       }
@@ -134,6 +135,7 @@ export async function POST(req: Request) {
       };
 
       const bestTemplate = selectBestTemplate(tempLead, availableTemplates);
+      const templateName = bestTemplate.name;
       const preparedMessage = renderMessage(bestTemplate.template, tempLead, sender, sender.instagram_username || 'vault.moment');
 
       // Upsert lead into database/memory
@@ -162,6 +164,7 @@ export async function POST(req: Request) {
         matched_niches: scoring.matchedNiches,
         status: 'QUEUED',
         prepared_message: preparedMessage,
+        template_name: templateName,
         campaign_id: campaign.id
       });
 

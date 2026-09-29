@@ -271,6 +271,28 @@ export async function getLeads(filters?: {
   minScore?: number;
   limit?: number;
 }): Promise<Lead[]> {
+  // Auto-unsnooze: move expired SNOOZED leads back to QUEUED
+  const now = new Date().toISOString();
+  if (isSupabaseConfigured && supabaseServer) {
+    try {
+      await supabaseServer
+        .from('leads')
+        .update({ status: 'QUEUED', snoozed_until: null, updated_at: now })
+        .eq('status', 'SNOOZED')
+        .lt('snoozed_until', now);
+    } catch (e) {
+      // best-effort
+    }
+  }
+  // Also unsnooze in memory
+  for (const ml of memoryStore.leads) {
+    if (ml.status === 'SNOOZED' && ml.snoozed_until && ml.snoozed_until < now) {
+      ml.status = 'QUEUED';
+      ml.snoozed_until = null;
+      ml.updated_at = now;
+    }
+  }
+
   let supabaseLeads: Lead[] = [];
   let supabaseQueried = false;
 
@@ -395,6 +417,7 @@ export async function upsertLead(lead: Partial<Lead> & { instagram_username: str
     matched_niches: lead.matched_niches || existing?.matched_niches || [],
     status: lead.status || existing?.status || 'QUEUED',
     prepared_message: lead.prepared_message || existing?.prepared_message,
+    template_name: lead.template_name || existing?.template_name,
     campaign_id: lead.campaign_id || existing?.campaign_id,
     notes: lead.notes || existing?.notes,
     snoozed_until: lead.snoozed_until ?? existing?.snoozed_until ?? null,
@@ -599,6 +622,27 @@ export async function updateSenderAccount(updates: Partial<SenderAccount>): Prom
 
 export async function getMonthlyUsageStatus(): Promise<MonthlyBudgetStatus> {
   const budget = BUDGET_CONFIG.monthlyBudgetUsd;
+  const monthKey = getMonthKey();
+
+  // Try to read persisted usage from Supabase first
+  let persistedUsage = memoryStore.monthlyUsageUsd;
+  if (isSupabaseConfigured && supabaseServer) {
+    try {
+      const { data } = await supabaseServer
+        .from('usage_tracking')
+        .select('estimated_cost_usd, qualified_leads_count')
+        .eq('id', monthKey)
+        .single();
+      if (data) {
+        persistedUsage = parseFloat(data.estimated_cost_usd) || 0;
+        // Sync in-memory with persisted value (highest wins to avoid under-counting)
+        memoryStore.monthlyUsageUsd = Math.max(memoryStore.monthlyUsageUsd, persistedUsage);
+      }
+    } catch (e) {
+      // First month or table empty — use in-memory
+    }
+  }
+
   const usage = memoryStore.monthlyUsageUsd;
   const remaining = Math.max(0, budget - usage);
 
@@ -614,9 +658,54 @@ export async function getMonthlyUsageStatus(): Promise<MonthlyBudgetStatus> {
   };
 }
 
+/** Returns 'YYYY-MM' key for the current month */
+function getMonthKey(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
+
 export async function recordRunUsage(costUsd: number, qualifiedCount: number): Promise<void> {
   memoryStore.monthlyUsageUsd += costUsd;
   memoryStore.todayQualifiedCount += qualifiedCount;
+
+  // Persist to Supabase so budget survives server restarts / Cloud Run cold starts
+  if (isSupabaseConfigured && supabaseServer) {
+    const monthKey = getMonthKey();
+    try {
+      // Upsert: increment existing row or create new one
+      const { data: existing } = await supabaseServer
+        .from('usage_tracking')
+        .select('estimated_cost_usd, qualified_leads_count')
+        .eq('id', monthKey)
+        .single();
+
+      if (existing) {
+        const newCost = parseFloat(existing.estimated_cost_usd) + costUsd;
+        const newCount = (existing.qualified_leads_count || 0) + qualifiedCount;
+        await supabaseServer
+          .from('usage_tracking')
+          .update({
+            estimated_cost_usd: parseFloat(newCost.toFixed(4)),
+            qualified_leads_count: newCount,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', monthKey);
+      } else {
+        await supabaseServer
+          .from('usage_tracking')
+          .insert({
+            id: monthKey,
+            month_str: monthKey,
+            estimated_cost_usd: parseFloat(costUsd.toFixed(4)),
+            budget_limit_usd: BUDGET_CONFIG.monthlyBudgetUsd,
+            qualified_leads_count: qualifiedCount,
+            updated_at: new Date().toISOString()
+          });
+      }
+    } catch (e) {
+      console.warn('[DB] Failed to persist usage to Supabase:', e);
+    }
+  }
 }
 
 export async function getDiscoveryRuns(): Promise<DiscoveryRun[]> {
@@ -696,6 +785,14 @@ export async function getAnalyticsSummary(): Promise<{
   }
   const repliesByNiche = Object.entries(nicheMap).map(([niche, count]) => ({ niche, count }));
 
+  // Real template breakdown from lead data
+  const templateMap: Record<string, number> = {};
+  for (const r of replied) {
+    const tplName = r.template_name || 'Unknown template';
+    templateMap[tplName] = (templateMap[tplName] || 0) + 1;
+  }
+  const repliesByTemplate = Object.entries(templateMap).map(([templateName, count]) => ({ templateName, count }));
+
   // Score of replied leads
   const avgScoreReplied =
     replied.length > 0
@@ -716,11 +813,8 @@ export async function getAnalyticsSummary(): Promise<{
     paidCount: paid,
     skipped,
     snoozed,
-    repliesByNiche: repliesByNiche.length > 0 ? repliesByNiche : [{ niche: 'AI / Tech', count: 1 }, { niche: 'SaaS', count: 1 }],
-    repliesByTemplate: [
-      { templateName: 'Creator who uses "save this"', count: Math.max(1, replied.length) },
-      { templateName: 'Founder / Solopreneur', count: 1 }
-    ],
-    avgScoreReplied: avgScoreReplied || 82
+    repliesByNiche: repliesByNiche.length > 0 ? repliesByNiche : [],
+    repliesByTemplate: repliesByTemplate.length > 0 ? repliesByTemplate : [],
+    avgScoreReplied
   };
 }

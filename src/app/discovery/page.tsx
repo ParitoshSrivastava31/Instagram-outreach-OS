@@ -99,6 +99,38 @@ export default function DiscoveryPage() {
     }
   };
 
+  const [isRecovering, setIsRecovering] = useState(false);
+  const [recoveryNotice, setRecoveryNotice] = useState<string | null>(null);
+
+  const handleRecoverRun = async () => {
+    setIsRecovering(true);
+    setRunError(null);
+    setRecoveryNotice(null);
+    try {
+      const res = await fetch('/api/discovery/recover-last-run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaignId: selectedCampaignId })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setRunError(data.error || 'Failed to sync paid run dataset');
+      } else {
+        setRunResult({
+          provider: 'Apify Dataset Recovery',
+          isMock: false,
+          runSummary: data.runSummary
+        });
+        setRecoveryNotice(`Successfully synced ${data.recoveredCount} verified creators from paid Apify run into your Queue!`);
+        setTimeout(() => setRecoveryNotice(null), 6000);
+      }
+    } catch (e: any) {
+      setRunError(e.message || 'Error syncing dataset');
+    } finally {
+      setIsRecovering(false);
+    }
+  };
+
   const isBudgetBlocked = budgetStatus?.is_budget_exceeded || false;
 
   return (
@@ -356,7 +388,25 @@ export default function DiscoveryPage() {
               <Sparkles className="h-4 w-4" />
               <span>{isRunning ? 'Discovering & Scoring Profiles...' : 'Run Discovery Now'}</span>
             </button>
+
+            {/* Re-sync / Recover previous run button */}
+            <button
+              onClick={handleRecoverRun}
+              disabled={isRecovering || isRunning}
+              className="mt-2.5 w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-medium text-zinc-700 bg-white hover:bg-zinc-50 border border-zinc-200 shadow-2xs transition cursor-pointer"
+            >
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+              <span>{isRecovering ? 'Syncing Paid Dataset...' : 'Sync Leads from Paid Apify Run'}</span>
+            </button>
           </div>
+
+          {/* Recovery Success Notification */}
+          {recoveryNotice && (
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-xs text-emerald-900 shadow-2xs flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+              <span className="font-medium">{recoveryNotice}</span>
+            </div>
+          )}
 
           {/* Run Error Display */}
           {runError && (

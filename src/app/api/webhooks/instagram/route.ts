@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getLeads, updateLeadStatus } from '@/lib/db';
+import { getLeads, getLeadByUsername, updateLeadStatus } from '@/lib/db';
 
 const META_VERIFY_TOKEN = process.env.META_VERIFY_TOKEN || 'vault_outreach_meta_token_2026';
 
@@ -53,16 +53,19 @@ export async function POST(req: Request) {
 
           console.log(`[Meta Webhook] Incoming DM from sender: ${senderUsername || senderId}`);
 
-          // Look up lead by username or sender ID
-          const allLeads = await getLeads({ limit: 500 });
-          const matchedLead = allLeads.find(l => {
-            const cleanUser = l.instagram_username.toLowerCase();
-            return (
-              (senderUsername && cleanUser === senderUsername.toLowerCase()) ||
+          // Look up lead by username first (O(1)), fall back to scoped ID scan only if needed
+          let matchedLead = null;
+          if (senderUsername) {
+            matchedLead = await getLeadByUsername(senderUsername);
+          }
+          if (!matchedLead && senderId) {
+            // Fallback: search by scoped ID in metadata (rare — only when username not in webhook payload)
+            const allLeads = await getLeads({ limit: 500 });
+            matchedLead = allLeads.find(l =>
               l.raw_metadata?.instagram_scoped_id === senderId ||
               l.raw_metadata?.id === senderId
-            );
-          });
+            ) || null;
+          }
 
           if (matchedLead) {
             console.log(`[Meta Webhook] Matched lead @${matchedLead.instagram_username}. Updating to REPLIED.`);

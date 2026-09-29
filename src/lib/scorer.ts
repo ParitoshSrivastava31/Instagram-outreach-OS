@@ -1,6 +1,23 @@
 import { RawInstagramProfile, LeadTier, Campaign } from '@/types';
 import { ROLE_KEYWORDS, RESEARCH_KEYWORDS, NICHE_KEYWORDS, EXCLUDED_KEYWORDS } from './taxonomy';
 
+/**
+ * Word-boundary matching to prevent false positives.
+ * e.g. 'ai' won't match 'email', 'ux' won't match 'luxury'.
+ * Multi-word terms like 'content creator' use exact substring match (already safe).
+ */
+const wordMatchCache = new Map<string, RegExp>();
+function wordMatch(text: string, term: string): boolean {
+  // Multi-word phrases are safe with includes — no false positive risk
+  if (term.includes(' ')) return text.includes(term);
+  let regex = wordMatchCache.get(term);
+  if (!regex) {
+    regex = new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+    wordMatchCache.set(term, regex);
+  }
+  return regex.test(text);
+}
+
 export interface ScoringResult {
   score: number;
   tier: LeadTier;
@@ -10,6 +27,7 @@ export interface ScoringResult {
   matchedNiches: string[];
   isQualified: boolean;
   rejectionReason?: string;
+  isUnverifiedFollowers?: boolean;
 }
 
 export function scoreInstagramProfile(
@@ -33,35 +51,47 @@ export function scoreInstagramProfile(
     .join(' ')
     .toLowerCase();
 
-  // 1. Follower Check
+  // 1. Follower Check & Unverified Tolerance
   const minFollowers = campaign?.target_min_followers ?? 1000;
   const maxFollowers = campaign?.target_max_followers ?? 20000;
-  const followers = profile.followersCount || 0;
+  let followers = profile.followersCount || 0;
+  let isUnverifiedFollowers = false;
 
-  if (followers < minFollowers) {
+  if (followers === 0) {
+    // When scraped without direct follower metrics (e.g. preview item or private API rate limit),
+    // do not throw away the lead. Assign an estimated baseline of 2,500 followers.
+    isUnverifiedFollowers = true;
+    followers = 2500;
+  } else if (followers < 300) {
+    // Brand new bot, empty or test account
     return {
       score: 0,
       tier: 'Disqualified',
-      qualificationReason: `Followers (${followers}) below minimum threshold (${minFollowers})`,
+      qualificationReason: `Followers (${followers.toLocaleString()}) below minimum viable creator threshold (300)`,
       matchedRoles: [],
       matchedResearch: [],
       matchedNiches: [],
       isQualified: false,
-      rejectionReason: `Follower count ${followers} is under campaign minimum of ${minFollowers}`
+      rejectionReason: `Account has only ${followers} followers (under 300)`
     };
-  }
-
-  if (followers > maxFollowers) {
+  } else if (followers > Math.max(maxFollowers * 2.5, 60000)) {
+    // Celebrity / mega-influencer account where cold outreach reply rate is near zero
     return {
       score: 0,
       tier: 'Disqualified',
-      qualificationReason: `Followers (${followers.toLocaleString()}) exceed maximum threshold (${maxFollowers.toLocaleString()})`,
+      qualificationReason: `Followers (${followers.toLocaleString()}) exceed target outreach ceiling`,
       matchedRoles: [],
       matchedResearch: [],
       matchedNiches: [],
       isQualified: false,
-      rejectionReason: `Follower count ${followers} exceeds target ceiling of ${maxFollowers}`
+      rejectionReason: `Follower count ${followers.toLocaleString()} is too large for personalized creator DM outreach`
     };
+  } else if (followers >= minFollowers && followers <= maxFollowers) {
+    // Right in the campaign's sweet spot
+    score += 15;
+  } else {
+    // Close to threshold (e.g. 500-1000 or 20k-35k)
+    score += 8;
   }
 
   // 2. Private account check
@@ -74,37 +104,38 @@ export function scoreInstagramProfile(
       matchedResearch: [],
       matchedNiches: [],
       isQualified: false,
-      rejectionReason: 'Private accounts cannot be viewed or qualified for public outreach'
+      rejectionReason: 'Private accounts cannot be reached via standard creator outreach'
     };
   }
 
   // 3. Exclusions & Negative Signal Detection
   const exclusions = campaign?.excluded_keywords?.length ? campaign.excluded_keywords : EXCLUDED_KEYWORDS;
   for (const excl of exclusions) {
-    if (textToScan.includes(excl.toLowerCase())) {
+    if (wordMatch(textToScan, excl.toLowerCase())) {
       matchedNegative.push(excl);
     }
   }
 
-  if (matchedNegative.some(n => ['meme', 'memes', 'entertainment', 'fan page', 'fanpage', 'giveaway'].includes(n))) {
-    score -= 30;
+  // Penalize aggregators, meme pages, giveaway spam
+  if (matchedNegative.some(n => ['meme', 'memes', 'entertainment', 'fan page', 'fanpage', 'giveaway', 'giveaways', 'win free'].includes(n))) {
+    score -= 35;
   }
-  if (matchedNegative.some(n => ['repost', 'reposts', 'aggregator', 'viral clips'].includes(n))) {
-    score -= 30;
-  }
-  if (matchedNegative.some(n => ['giveaway', 'giveaways', 'win free'].includes(n))) {
-    score -= 25;
+  if (matchedNegative.some(n => ['repost', 'reposts', 'aggregator', 'viral clips', 'daily clips'].includes(n))) {
+    score -= 35;
   }
 
-  // Activity & Quality checks
+  // Activity & Quality baseline
   const postsCount = profile.postsCount ?? 0;
   const bio = (profile.biography || '').trim();
 
-  if (postsCount < 5) {
-    score -= 20; // Inactive or barely started
+  if (postsCount > 0 && postsCount < 3) {
+    score -= 10;
   }
-  if (bio.length < 15) {
-    score -= 15; // Bare profile
+  if (bio.length > 20) {
+    score += 10;
+  }
+  if (profile.isBusinessAccount || profile.businessCategoryName) {
+    score += 10;
   }
 
   if (options?.alreadyContacted) {
@@ -114,37 +145,69 @@ export function scoreInstagramProfile(
   // 4. Role Matching
   const roleKeywords = campaign?.role_keywords?.length ? campaign.role_keywords : ROLE_KEYWORDS;
   for (const role of roleKeywords) {
-    if (textToScan.includes(role.toLowerCase())) {
+    if (wordMatch(textToScan, role.toLowerCase())) {
       if (!matchedRoles.includes(role)) {
         matchedRoles.push(role);
       }
     }
   }
 
-  // Role Scoring
-  const hasOperatorRole = matchedRoles.some(r =>
-    ['content creator', 'content strategist', 'social media manager', 'ugc creator', 'creator educator', 'digital creator'].includes(r)
-  );
-  const hasResearchRole = matchedRoles.some(r =>
-    ['content strategy', 'content marketing', 'marketing strategist', 'growth marketer'].includes(r)
-  );
-  const hasFounderRole = matchedRoles.some(r =>
-    ['founder', 'co-founder', 'solopreneur', 'entrepreneur', 'consultant'].includes(r)
-  );
-  const hasEducatorRole = matchedRoles.some(r =>
-    ['educator', 'teacher', 'coach', 'course creator'].includes(r)
-  );
+  // Additional general creator role detection
+  const generalRoleMatches = [
+    { key: 'content creator', terms: ['content creator', 'digital creator', 'creator', 'ugc creator', 'ugc'] },
+    { key: 'strategist', terms: ['strategist', 'strategy', 'social media manager', 'smm', 'copywriter'] },
+    { key: 'founder', terms: ['founder', 'co-founder', 'solopreneur', 'entrepreneur', 'consultant', 'agency'] },
+    { key: 'educator', terms: ['educator', 'coach', 'mentor', 'teacher', 'author', 'speaker', 'i help', 'helping', 'sharing tips'] },
+    { key: 'designer', terms: ['designer', 'creative director', 'video editor', 'art director', 'photographer'] }
+  ];
 
-  if (hasOperatorRole) score += 25;
-  else if (hasResearchRole) score += 20;
-  else if (hasFounderRole) score += 15;
-  else if (hasEducatorRole) score += 10;
-  else if (matchedRoles.length > 0) score += 10;
+  for (const group of generalRoleMatches) {
+    if (group.terms.some(t => wordMatch(textToScan, t))) {
+      if (!matchedRoles.includes(group.key)) {
+        matchedRoles.push(group.key);
+      }
+    }
+  }
 
-  // 5. Research & Problem Keyword Matching ("save this", "hooks", "research", etc.)
+  if (matchedRoles.length > 0) {
+    score += 25;
+  }
+
+  // 5. Niche Matching
+  const nicheKeywords = campaign?.niche_keywords?.length ? campaign.niche_keywords : NICHE_KEYWORDS;
+  for (const n of nicheKeywords) {
+    if (wordMatch(textToScan, n.toLowerCase())) {
+      if (!matchedNiches.includes(n)) {
+        matchedNiches.push(n);
+      }
+    }
+  }
+
+  // Additional general niche topics
+  const generalNicheMatches = [
+    { key: 'marketing', terms: ['marketing', 'growth', 'sales', 'branding', 'personal brand'] },
+    { key: 'ai & tech', terms: ['ai', 'tech', 'software', 'saas', 'automation', 'chatgpt', 'claude'] },
+    { key: 'business', terms: ['business', 'b2b', 'startup', 'revenue', 'ecommerce', 'monetize'] },
+    { key: 'design', terms: ['design', 'ui/ux', 'visual', 'creative', 'typography', 'interior design'] },
+    { key: 'lifestyle & content', terms: ['lifestyle', 'blogger', 'vlog', 'reels', 'travel', 'fashion', 'wellness'] }
+  ];
+
+  for (const group of generalNicheMatches) {
+    if (group.terms.some(t => wordMatch(textToScan, t))) {
+      if (!matchedNiches.includes(group.key)) {
+        matchedNiches.push(group.key);
+      }
+    }
+  }
+
+  if (matchedNiches.length > 0) {
+    score += 20;
+  }
+
+  // 6. Research & Problem Keyword Matching (Bonus accelerator, NOT a mandatory barrier!)
   const researchKeywords = campaign?.research_keywords?.length ? campaign.research_keywords : RESEARCH_KEYWORDS;
   for (const kw of researchKeywords) {
-    if (textToScan.includes(kw.toLowerCase())) {
+    if (wordMatch(textToScan, kw.toLowerCase())) {
       if (!matchedResearch.includes(kw)) {
         matchedResearch.push(kw);
       }
@@ -154,89 +217,47 @@ export function scoreInstagramProfile(
   const hasSaveBehavior = matchedResearch.some(r =>
     ['save this', 'save this reel', 'save this post', 'bookmark this', 'come back to this', 'for later', 'use this later'].includes(r)
   );
-  const hasContentResearch = matchedResearch.some(r =>
-    ['content ideas', 'content research', 'research', 'competitor research', 'creative research'].includes(r)
-  );
-  const hasHooksOrFrameworks = matchedResearch.some(r =>
-    ['hooks', 'hook ideas', 'scripts', 'framework', 'frameworks', 'templates', 'prompts', 'tools', 'swipe file'].includes(r)
-  );
-  const hasInspirationOrNotes = matchedResearch.some(r =>
-    ['inspiration', 'knowledge', 'notes', 'learning', 'curation', 'breakdown', 'case study'].includes(r)
-  );
 
-  if (hasSaveBehavior) score += 20;
-  if (hasContentResearch) score += 15;
-  if (hasHooksOrFrameworks) score += 10;
-  if (hasInspirationOrNotes) score += 10;
-
-  // 6. Niche Matching
-  const nicheKeywords = campaign?.niche_keywords?.length ? campaign.niche_keywords : NICHE_KEYWORDS;
-  for (const n of nicheKeywords) {
-    if (textToScan.includes(n.toLowerCase())) {
-      if (!matchedNiches.includes(n)) {
-        matchedNiches.push(n);
-      }
-    }
+  if (hasSaveBehavior) {
+    score += 20;
+  } else if (matchedResearch.length > 0) {
+    score += 15;
   }
 
-  const hasAINiche = matchedNiches.some(n =>
-    ['ai', 'artificial intelligence', 'generative ai', 'chatgpt', 'claude', 'automation', 'saas', 'software', 'technology', 'developer'].includes(n)
-  );
-  const hasMarketingNiche = matchedNiches.some(n =>
-    ['marketing', 'growth', 'sales', 'content marketing', 'creator economy'].includes(n)
-  );
-  const hasStartupNiche = matchedNiches.some(n =>
-    ['startup', 'startups', 'founder', 'entrepreneurship', 'business', 'b2b'].includes(n)
-  );
-  const hasDesignOrProduct = matchedNiches.some(n =>
-    ['ux', 'ui', 'design', 'product', 'product management', 'copywriting', 'branding'].includes(n)
-  );
-  const hasProductivityOrEducation = matchedNiches.some(n =>
-    ['productivity', 'career', 'leadership', 'education', 'writing', 'newsletter'].includes(n)
-  );
+  // Commercial / Creator Monetization Signals
+  if (wordMatch(textToScan, 'dm for') || wordMatch(textToScan, 'collab') || wordMatch(textToScan, 'inquiries')) score += 10;
+  if (wordMatch(textToScan, 'newsletter') || wordMatch(textToScan, 'substack') || wordMatch(textToScan, 'course') || wordMatch(textToScan, 'gumroad')) score += 10;
 
-  if (hasAINiche) score += 15;
-  else if (hasMarketingNiche) score += 15;
-  else if (hasStartupNiche) score += 15;
-  else if (hasDesignOrProduct) score += 12;
-  else if (hasProductivityOrEducation) score += 10;
-  else if (matchedNiches.length > 0) score += 8;
-
-  // 7. Business Signal
-  if (textToScan.includes('agency')) score += 10;
-  if (textToScan.includes('consultant') || textToScan.includes('consulting')) score += 10;
-  if (textToScan.includes('newsletter') || textToScan.includes('substack')) score += 10;
-  if (textToScan.includes('course') || textToScan.includes('digital product') || textToScan.includes('gumroad')) score += 10;
-
-  // 8. Profile Quality Baseline
-  if (bio.length >= 25) score += 5;
-  if (postsCount >= 10) score += 5;
-  if (followers >= 1000 && followers <= 20000) score += 5;
-
-  // Hard penalty if it was flagged with negative keywords
+  // Penalize negative keywords
   if (matchedNegative.length > 0) {
-    score -= matchedNegative.length * 10;
+    score -= matchedNegative.length * 15;
   }
 
-  // 9. Tier Assignment & Critical Qualification Rule
-  // Critical Rule: A profile must satisfy at least 1 role signal AND 1 research/behavior signal AND 1 niche/business signal
+  // 7. Tier Assignment Logic
   const roleCount = matchedRoles.length;
-  const researchCount = matchedResearch.length;
   const nicheCount = matchedNiches.length;
+  const researchCount = matchedResearch.length;
 
   let tier: LeadTier = 'Disqualified';
   let isQualified = false;
 
-  // Tier A: Creator-operators with research behavior and active niche
-  if (score >= 50 && roleCount >= 1 && researchCount >= 1 && (nicheCount >= 1 || hasFounderRole)) {
+  // Disqualification conditions
+  if (score < 15 || (matchedNegative.length > 0 && score < 25)) {
+    tier = 'Disqualified';
+    isQualified = false;
+  }
+  // Tier A: Strong creator role + (active niche OR high-intent save/research signal)
+  else if (score >= 45 && (roleCount >= 1 || profile.businessCategoryName) && (nicheCount >= 1 || researchCount >= 1)) {
     tier = 'Tier A';
     isQualified = true;
-  } else if (score >= 35 && (roleCount >= 1 || nicheCount >= 1) && (researchCount >= 1 || hasSaveBehavior)) {
-    // Tier B: High-value knowledge creators
+  }
+  // Tier B: Creator role OR target niche match with active profile bio
+  else if (score >= 25 && (roleCount >= 1 || nicheCount >= 1 || bio.length >= 15)) {
     tier = 'Tier B';
     isQualified = true;
-  } else if (score >= 25 && researchCount >= 1) {
-    // Tier C: Niche experts with explicit research or save language
+  }
+  // Tier C: Emerging creator or general profile matching keywords
+  else if (score >= 15) {
     tier = 'Tier C';
     isQualified = true;
   } else {
@@ -246,6 +267,7 @@ export function scoreInstagramProfile(
 
   // Formulate Human-readable Qualification Reason
   const formatFollowers = (num: number) => {
+    if (isUnverifiedFollowers) return '~2.5K est.';
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num.toString();
@@ -254,6 +276,8 @@ export function scoreInstagramProfile(
   const reasonParts: string[] = [];
   if (matchedRoles.length > 0) {
     reasonParts.push(capitalizeWords(matchedRoles[0]));
+  } else if (profile.businessCategoryName) {
+    reasonParts.push(capitalizeWords(profile.businessCategoryName));
   }
   if (matchedNiches.length > 0) {
     reasonParts.push(capitalizeWords(matchedNiches[0]) + ' focus');
@@ -275,7 +299,8 @@ export function scoreInstagramProfile(
     matchedResearch,
     matchedNiches,
     isQualified,
-    rejectionReason: isQualified ? undefined : `Low score (${score}) or missing role/research/niche intersection`
+    rejectionReason: isQualified ? undefined : `Low relevance score (${score}) or missing creator indicators`,
+    isUnverifiedFollowers
   };
 }
 
