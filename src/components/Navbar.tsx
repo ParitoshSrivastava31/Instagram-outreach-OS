@@ -76,7 +76,7 @@ export default function Navbar() {
           {/* Left: Brand Identity with Instagram Squircle Logo */}
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="relative flex h-7.5 w-7.5 items-center justify-center rounded-[9px] bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white shadow-xs shadow-pink-500/25 group-hover:scale-105 transition-all">
+              <div className="relative flex h-7.5 w-7.5 items-center justify-center rounded-[9px] bg-linear-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white shadow-xs shadow-pink-500/25 group-hover:scale-105 transition-all">
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="18" height="18" x="3" y="3" rx="5" />
                   <circle cx="12" cy="12" r="3.8" />
@@ -216,7 +216,7 @@ export default function Navbar() {
                 budgetStatus ? budgetStatus.monthly_budget_usd.toFixed(2) : '4.50'
               } hard limit used`}
             >
-              <div className="flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-0.5 text-[11px] border border-zinc-200/70 font-mono hover:bg-zinc-100 transition cursor-default text-[10px] sm:text-[11px]">
+              <div className="flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-0.5 border border-zinc-200/70 font-mono hover:bg-zinc-100 transition cursor-default text-[10px] sm:text-[11px]">
                 <span className="text-zinc-400">$</span>
                 <span
                   className={`font-semibold ${
@@ -259,7 +259,7 @@ export default function Navbar() {
               <div className="relative">
                 <Icon className={`h-4.5 w-4.5 transition-transform ${isActive ? 'text-zinc-950 scale-110' : 'text-zinc-400'}`} />
                 {isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-gradient-to-r from-[#e1306c] to-[#fd1d1d]" />
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-linear-to-r from-[#e1306c] to-[#fd1d1d]" />
                 )}
               </div>
               <span className={`text-[10px] tracking-tight ${isActive ? 'text-zinc-950 font-bold' : 'text-zinc-500 font-medium'}`}>
