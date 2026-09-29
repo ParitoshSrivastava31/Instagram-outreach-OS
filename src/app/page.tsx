@@ -628,9 +628,10 @@ export default function OutreachPage() {
 
                     {/* Line 3: Research signal chip & Status */}
                     <div className="mt-2 flex items-center justify-between text-[10px] border-t border-zinc-100 pt-1.5">
-                      <span className="text-zinc-500 font-mono truncate max-w-[200px]">
+                      <span className="text-zinc-500 font-mono truncate max-w-50">
                         {lead.matched_research?.[0] ? `Signal: "${lead.matched_research[0]}"` : 'Role matched'}
                       </span>
+
                       <span
                         className={`font-semibold uppercase tracking-wider text-[9px] ${
                           lead.status === 'CONTACTED'
@@ -796,8 +797,9 @@ export default function OutreachPage() {
                   {/* OPEN & COPY (PRIMARY) */}
                   <button
                     onClick={() => handleOpenAndCopy(currentLead)}
-                    className="flex-1 min-w-[200px] flex items-center justify-center gap-2 rounded-xl bg-zinc-950 hover:bg-black px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition active:scale-[0.98] cursor-pointer"
+                    className="flex-1 min-w-50 flex items-center justify-center gap-2 rounded-xl bg-zinc-950 hover:bg-black px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition active:scale-[0.98] cursor-pointer"
                   >
+
                     {copiedId === currentLead.id ? (
                       <>
                         <Check className="h-4 w-4 text-emerald-400" />
