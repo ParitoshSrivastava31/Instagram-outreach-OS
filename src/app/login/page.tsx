@@ -51,7 +51,7 @@ function LoginForm() {
     <div className="w-full max-w-sm relative z-10">
       {/* Brand identity badge */}
       <div className="flex flex-col items-center mb-8 text-center">
-        <div className="h-12 w-12 rounded-2xl bg-zinc-950 text-white flex items-center justify-center shadow-md mb-4 border border-zinc-800">
+        <div className="h-12 w-12 rounded-[14px] bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center shadow-lg shadow-pink-500/20 mb-4 transition-transform hover:scale-105">
           <svg
             className="h-6 w-6"
             viewBox="0 0 24 24"
@@ -61,10 +61,9 @@ function LoginForm() {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <rect width="18" height="18" x="3" y="3" rx="2" />
-            <circle cx="12" cy="12" r="3" />
-            <path d="m14.5 9.5 2-2" />
-            <path d="m7.5 16.5 2-2" />
+            <rect width="18" height="18" x="3" y="3" rx="5" />
+            <circle cx="12" cy="12" r="3.8" />
+            <circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" />
           </svg>
         </div>
         <h1 className="text-xl font-bold tracking-tight text-zinc-900">
@@ -106,7 +105,7 @@ function LoginForm() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isLocked}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-zinc-700 transition"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-zinc-700 transition cursor-pointer"
                 tabIndex={-1}
               >
                 {showPassword ? (
@@ -128,7 +127,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading || !password.trim() || isLocked}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-zinc-950 text-white text-xs font-semibold hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-xs cursor-pointer"
+            className="w-full btn-insta flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-white text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition shadow-xs cursor-pointer active:scale-98"
           >
             {loading ? (
               <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />

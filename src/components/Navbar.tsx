@@ -73,15 +73,14 @@ export default function Navbar() {
     <>
       <header className="sticky top-0 z-40 border-b border-zinc-200/70 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-12 max-w-7xl items-center justify-between px-4 sm:px-6">
-          {/* Left: Brand Identity */}
+          {/* Left: Brand Identity with Instagram Squircle Logo */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-950 text-white shadow-xs group-hover:bg-zinc-800 transition">
-                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect width="18" height="18" x="3" y="3" rx="2" />
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="m14.5 9.5 2-2" />
-                  <path d="m7.5 16.5 2-2" />
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="relative flex h-7.5 w-7.5 items-center justify-center rounded-[9px] bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white shadow-xs shadow-pink-500/25 group-hover:scale-105 transition-all">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="18" height="18" x="3" y="3" rx="5" />
+                  <circle cx="12" cy="12" r="3.8" />
+                  <circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" />
                 </svg>
               </div>
               <div className="flex items-center gap-1.5 text-xs font-semibold tracking-tight text-zinc-900">
@@ -95,8 +94,8 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Center: Sleek Segmented Primary Tabs */}
-          <nav className="flex items-center gap-0.5 rounded-lg bg-zinc-100/70 p-0.5 border border-zinc-200/50">
+          {/* Center: Sleek Segmented Primary Tabs (Desktop) */}
+          <nav className="hidden md:flex items-center gap-0.5 rounded-lg bg-zinc-100/70 p-0.5 border border-zinc-200/50">
             {primaryNav.map(item => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -117,67 +116,70 @@ export default function Navbar() {
             })}
           </nav>
 
+
           {/* Right: Icon Utilities + Budget Telemetry */}
           <div className="flex items-center gap-1.5">
-            {/* Secondary Tools as Clean Icon Buttons with Hover Tooltips */}
-            <Tooltip label="Message Templates">
-              <Link
-                href="/templates"
-                className={`flex h-7 w-7 items-center justify-center rounded-md transition ${
-                  pathname === '/templates'
-                    ? 'bg-zinc-100 text-zinc-900 font-semibold shadow-2xs'
-                    : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'
-                }`}
-              >
-                <FileText className="h-3.5 w-3.5" />
-              </Link>
-            </Tooltip>
+            {/* Secondary Tools as Clean Icon Buttons with Hover Tooltips (hidden on very small phones, accessible via bottom nav) */}
+            <div className="hidden sm:flex items-center gap-1">
+              <Tooltip label="Message Templates">
+                <Link
+                  href="/templates"
+                  className={`flex h-7 w-7 items-center justify-center rounded-md transition ${
+                    pathname === '/templates'
+                      ? 'bg-zinc-100 text-zinc-900 font-semibold shadow-2xs'
+                      : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'
+                  }`}
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                </Link>
+              </Tooltip>
 
-            <Tooltip label="Outreach & Funnel Analytics">
-              <Link
-                href="/analytics"
-                className={`flex h-7 w-7 items-center justify-center rounded-md transition ${
-                  pathname === '/analytics'
-                    ? 'bg-zinc-100 text-zinc-900 font-semibold shadow-2xs'
-                    : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'
-                }`}
-              >
-                <BarChart3 className="h-3.5 w-3.5" />
-              </Link>
-            </Tooltip>
+              <Tooltip label="Outreach & Funnel Analytics">
+                <Link
+                  href="/analytics"
+                  className={`flex h-7 w-7 items-center justify-center rounded-md transition ${
+                    pathname === '/analytics'
+                      ? 'bg-zinc-100 text-zinc-900 font-semibold shadow-2xs'
+                      : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'
+                  }`}
+                >
+                  <BarChart3 className="h-3.5 w-3.5" />
+                </Link>
+              </Tooltip>
 
-            <Tooltip label="Settings & Webhook Config">
-              <Link
-                href="/settings"
-                className={`flex h-7 w-7 items-center justify-center rounded-md transition ${
-                  pathname === '/settings'
-                    ? 'bg-zinc-100 text-zinc-900 font-semibold shadow-2xs'
-                    : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'
-                }`}
-              >
-                <Settings className="h-3.5 w-3.5" />
-              </Link>
-            </Tooltip>
+              <Tooltip label="Settings & Webhook Config">
+                <Link
+                  href="/settings"
+                  className={`flex h-7 w-7 items-center justify-center rounded-md transition ${
+                    pathname === '/settings'
+                      ? 'bg-zinc-100 text-zinc-900 font-semibold shadow-2xs'
+                      : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'
+                  }`}
+                >
+                  <Settings className="h-3.5 w-3.5" />
+                </Link>
+              </Tooltip>
 
-            <Tooltip label="Lock Workspace (Sign Out)">
-              <button
-                onClick={handleLogout}
-                className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
-              >
-                <Lock className="h-3.5 w-3.5" />
-              </button>
-            </Tooltip>
+              <Tooltip label="Lock Workspace (Sign Out)">
+                <button
+                  onClick={handleLogout}
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                >
+                  <Lock className="h-3.5 w-3.5" />
+                </button>
+              </Tooltip>
 
-            <Tooltip label="Keyboard Shortcuts (?)">
-              <button
-                onClick={() => setShowShortcuts(true)}
-                className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition cursor-pointer"
-              >
-                <Command className="h-3.5 w-3.5" />
-              </button>
-            </Tooltip>
+              <Tooltip label="Keyboard Shortcuts (?)">
+                <button
+                  onClick={() => setShowShortcuts(true)}
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition cursor-pointer"
+                >
+                  <Command className="h-3.5 w-3.5" />
+                </button>
+              </Tooltip>
 
-            <div className="h-3.5 w-px bg-zinc-200/80 mx-0.5" />
+              <div className="h-3.5 w-px bg-zinc-200/80 mx-0.5" />
+            </div>
 
             {/* Provider Status Indicator */}
             <Tooltip
@@ -200,7 +202,7 @@ export default function Navbar() {
                     }`}
                   />
                 </span>
-                <span className="text-[10px] hidden sm:inline-block">
+                <span className="text-[10px] hidden xs:inline-block">
                   {providerInfo?.isMock ? 'Sandbox' : 'Live'}
                 </span>
               </div>
@@ -214,7 +216,7 @@ export default function Navbar() {
                 budgetStatus ? budgetStatus.monthly_budget_usd.toFixed(2) : '4.50'
               } hard limit used`}
             >
-              <div className="flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-0.5 text-[11px] border border-zinc-200/70 font-mono hover:bg-zinc-100 transition cursor-default">
+              <div className="flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-0.5 text-[11px] border border-zinc-200/70 font-mono hover:bg-zinc-100 transition cursor-default text-[10px] sm:text-[11px]">
                 <span className="text-zinc-400">$</span>
                 <span
                   className={`font-semibold ${
@@ -233,8 +235,44 @@ export default function Navbar() {
         </div>
       </header>
 
+      {/* Mobile Bottom Navigation Bar (< md) - Instagram Style Thumb Reach */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-zinc-200/90 px-1 py-1 flex items-center justify-around shadow-lg shadow-zinc-950/10 pb-[calc(env(safe-area-inset-bottom,0px)+3px)]">
+        {[
+          { label: 'Queue', href: '/', icon: Send },
+          { label: 'Discovery', href: '/discovery', icon: Compass },
+          { label: 'Database', href: '/leads', icon: Users },
+          { label: 'Campaigns', href: '/campaigns', icon: Layers },
+          { label: 'Settings', href: '/settings', icon: Settings },
+        ].map(item => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex flex-col items-center justify-center gap-0.5 py-1 px-3 rounded-xl transition ${
+                isActive
+                  ? 'text-zinc-950 font-bold'
+                  : 'text-zinc-400 hover:text-zinc-700'
+              }`}
+            >
+              <div className="relative">
+                <Icon className={`h-4.5 w-4.5 transition-transform ${isActive ? 'text-zinc-950 scale-110' : 'text-zinc-400'}`} />
+                {isActive && (
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-gradient-to-r from-[#e1306c] to-[#fd1d1d]" />
+                )}
+              </div>
+              <span className={`text-[10px] tracking-tight ${isActive ? 'text-zinc-950 font-bold' : 'text-zinc-500 font-medium'}`}>
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
+
       {/* Keyboard Shortcuts Dialog */}
       <ShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
     </>
   );
 }
+

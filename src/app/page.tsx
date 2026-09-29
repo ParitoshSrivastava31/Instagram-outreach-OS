@@ -14,6 +14,7 @@ import {
   Sparkles,
   MessageSquare,
   ChevronRight,
+  ChevronLeft,
   SlidersHorizontal,
   BookmarkCheck,
   Send,
@@ -37,6 +38,8 @@ export default function OutreachPage() {
   const [noteModalLead, setNoteModalLead] = useState<Lead | null>(null);
   const [noteText, setNoteText] = useState('');
   const [isTestLoading, setIsTestLoading] = useState(false);
+  const [mobileView, setMobileView] = useState<'list' | 'detail'>('list');
+
 
   const fetchLeads = useCallback(async () => {
     try {
@@ -338,36 +341,36 @@ export default function OutreachPage() {
         </div>
 
         {/* Integrated Linear-style Stat Strip + Action */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center rounded-lg bg-white border border-zinc-200/80 divide-x divide-zinc-100 shadow-2xs">
-            <div className="px-3 py-1.5 text-left">
-              <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" />
-                <span>Queued</span>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full md:w-auto">
+          <div className="grid grid-cols-4 sm:flex items-center rounded-lg bg-white border border-zinc-200/80 divide-x divide-zinc-100 shadow-2xs w-full sm:w-auto">
+            <div className="px-2.5 sm:px-3 py-1.5 text-center sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start gap-1 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-zinc-400 shrink-0" />
+                <span className="truncate">Queued</span>
               </div>
               <div className="text-xs font-semibold text-zinc-900 font-mono mt-0.5">{queuedCount}</div>
             </div>
 
-            <div className="px-3 py-1.5 text-left">
-              <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                <span>Contacted</span>
+            <div className="px-2.5 sm:px-3 py-1.5 text-center sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start gap-1 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <span className="truncate">Sent</span>
               </div>
               <div className="text-xs font-semibold text-emerald-700 font-mono mt-0.5">{contactedCount}</div>
             </div>
 
-            <div className="px-3 py-1.5 text-left">
-              <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
-                <span>Replied</span>
+            <div className="px-2.5 sm:px-3 py-1.5 text-center sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start gap-1 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-500 shrink-0" />
+                <span className="truncate">Replied</span>
               </div>
               <div className="text-xs font-semibold text-rose-700 font-mono mt-0.5">{repliedCount}</div>
             </div>
 
-            <div className="px-3 py-1.5 text-left">
-              <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
-                <span>Tried Vault</span>
+            <div className="px-2.5 sm:px-3 py-1.5 text-center sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start gap-1 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 shrink-0" />
+                <span className="truncate">Vault</span>
               </div>
               <div className="text-xs font-semibold text-indigo-700 font-mono mt-0.5">{usedVaultCount}</div>
             </div>
@@ -375,7 +378,7 @@ export default function OutreachPage() {
 
           <Link
             href="/discovery"
-            className="flex items-center gap-1.5 rounded-lg bg-zinc-950 hover:bg-black px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition active:scale-[0.98]"
+            className="btn-insta flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold shadow-xs transition active:scale-[0.98] w-full sm:w-auto"
           >
             <Sparkles className="h-3.5 w-3.5" />
             <span>Run Discovery</span>
@@ -384,14 +387,14 @@ export default function OutreachPage() {
       </div>
 
       {/* Filter Tabs & Search Bar */}
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-0.5 rounded-lg bg-zinc-100/70 p-0.5 border border-zinc-200/60">
+      <div className="mt-4 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-1 rounded-lg bg-zinc-100/70 p-1 border border-zinc-200/60 overflow-x-auto no-scrollbar max-w-full shrink-0">
           <button
             onClick={() => {
               setFilterTab('QUEUED');
               setSelectedIndex(0);
             }}
-            className={`rounded-md px-3 py-1 text-xs font-medium transition cursor-pointer ${
+            className={`rounded-md px-3 py-1 text-xs font-medium transition cursor-pointer whitespace-nowrap shrink-0 ${
               filterTab === 'QUEUED'
                 ? 'bg-white text-zinc-950 font-semibold shadow-2xs border border-zinc-200/60'
                 : 'text-zinc-600 hover:text-zinc-900'
@@ -404,7 +407,7 @@ export default function OutreachPage() {
               setFilterTab('TIER_A');
               setSelectedIndex(0);
             }}
-            className={`rounded-md px-3 py-1 text-xs font-medium transition cursor-pointer ${
+            className={`rounded-md px-3 py-1 text-xs font-medium transition cursor-pointer whitespace-nowrap shrink-0 ${
               filterTab === 'TIER_A'
                 ? 'bg-white text-zinc-950 font-semibold shadow-2xs border border-zinc-200/60'
                 : 'text-zinc-600 hover:text-zinc-900'
@@ -417,7 +420,7 @@ export default function OutreachPage() {
               setFilterTab('CONTACTED');
               setSelectedIndex(0);
             }}
-            className={`rounded-md px-3 py-1 text-xs font-medium transition cursor-pointer ${
+            className={`rounded-md px-3 py-1 text-xs font-medium transition cursor-pointer whitespace-nowrap shrink-0 ${
               filterTab === 'CONTACTED'
                 ? 'bg-white text-zinc-950 font-semibold shadow-2xs border border-zinc-200/60'
                 : 'text-zinc-600 hover:text-zinc-900'
@@ -430,7 +433,7 @@ export default function OutreachPage() {
               setFilterTab('REPLIED');
               setSelectedIndex(0);
             }}
-            className={`rounded-md px-3 py-1 text-xs font-medium transition cursor-pointer ${
+            className={`rounded-md px-3 py-1 text-xs font-medium transition cursor-pointer whitespace-nowrap shrink-0 ${
               filterTab === 'REPLIED'
                 ? 'bg-white text-zinc-950 font-semibold shadow-2xs border border-zinc-200/60'
                 : 'text-zinc-600 hover:text-zinc-900'
@@ -443,7 +446,7 @@ export default function OutreachPage() {
               setFilterTab('ALL');
               setSelectedIndex(0);
             }}
-            className={`rounded-md px-3 py-1 text-xs font-medium transition cursor-pointer ${
+            className={`rounded-md px-3 py-1 text-xs font-medium transition cursor-pointer whitespace-nowrap shrink-0 ${
               filterTab === 'ALL'
                 ? 'bg-white text-zinc-950 font-semibold shadow-2xs border border-zinc-200/60'
                 : 'text-zinc-600 hover:text-zinc-900'
@@ -477,13 +480,37 @@ export default function OutreachPage() {
         </div>
       </div>
 
+      {/* Mobile View Toggle Switch (< lg) */}
+      <div className="flex lg:hidden items-center justify-between bg-zinc-100/90 p-1 rounded-xl mt-4 border border-zinc-200/80">
+        <button
+          onClick={() => setMobileView('list')}
+          className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+            mobileView === 'list'
+              ? 'bg-white text-zinc-950 shadow-2xs border border-zinc-200/60'
+              : 'text-zinc-500 hover:text-zinc-900'
+          }`}
+        >
+          Prospects ({filteredLeads.length})
+        </button>
+        <button
+          onClick={() => setMobileView('detail')}
+          className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer truncate px-2 ${
+            mobileView === 'detail'
+              ? 'bg-white text-zinc-950 shadow-2xs border border-zinc-200/60'
+              : 'text-zinc-500 hover:text-zinc-900'
+          }`}
+        >
+          {currentLead ? `@${currentLead.instagram_username}` : 'Lead Detail'}
+        </button>
+      </div>
+
       {/* Main 2-Column Execution Workbench */}
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left Column: Prospect Queue List (5 columns) */}
-        <div className="lg:col-span-5 flex flex-col gap-2">
+        <div className={`lg:col-span-5 flex flex-col gap-2 ${mobileView === 'detail' ? 'hidden lg:flex' : 'flex'}`}>
           <div className="flex items-center justify-between px-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
             <span>PROSPECTS ({filteredLeads.length})</span>
-            <span className="text-[10px] font-normal text-zinc-400 lowercase font-mono">
+            <span className="text-[10px] font-normal text-zinc-400 lowercase font-mono hidden sm:inline-block">
               Keys: [J / K] to navigate
             </span>
           </div>
@@ -565,7 +592,10 @@ export default function OutreachPage() {
                 return (
                   <div
                     key={lead.id}
-                    onClick={() => setSelectedIndex(idx)}
+                    onClick={() => {
+                      setSelectedIndex(idx);
+                      setMobileView('detail');
+                    }}
                     className={`group cursor-pointer rounded-xl p-3 transition border text-left ${
                       isSelected
                         ? 'bg-zinc-50/90 border-zinc-950/80 shadow-xs border-l-3 border-l-zinc-950'
@@ -654,9 +684,41 @@ export default function OutreachPage() {
         </div>
 
         {/* Right Column: Active Lead Execution Card (7 columns) */}
-        <div className="lg:col-span-7">
+        <div className={`lg:col-span-7 ${mobileView === 'list' ? 'hidden lg:block' : 'block'}`}>
           {currentLead ? (
             <div className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs">
+              {/* Mobile Back & Next Header (< lg) */}
+              <div className="lg:hidden flex items-center justify-between pb-3.5 mb-3.5 border-b border-zinc-100">
+                <button
+                  onClick={() => setMobileView('list')}
+                  className="flex items-center gap-1 text-xs font-semibold text-zinc-700 hover:text-zinc-950 py-1.5 px-3 rounded-lg bg-zinc-100 active:bg-zinc-200 transition cursor-pointer"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span>Back to Prospects</span>
+                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setSelectedIndex(prev => Math.max(prev - 1, 0))}
+                    disabled={selectedIndex === 0}
+                    className="p-1.5 rounded-lg bg-zinc-100 text-zinc-700 disabled:opacity-30 disabled:pointer-events-none active:bg-zinc-200 cursor-pointer"
+                    title="Previous Lead"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <span className="text-[11px] font-mono text-zinc-500 px-1 font-semibold">
+                    {selectedIndex + 1} / {filteredLeads.length}
+                  </span>
+                  <button
+                    onClick={() => setSelectedIndex(prev => Math.min(prev + 1, filteredLeads.length - 1))}
+                    disabled={selectedIndex >= filteredLeads.length - 1}
+                    className="p-1.5 rounded-lg bg-zinc-100 text-zinc-700 disabled:opacity-30 disabled:pointer-events-none active:bg-zinc-200 cursor-pointer"
+                    title="Next Lead"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
               {/* Creator Banner */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-zinc-100 pb-4">
                 <div className="flex items-center gap-3">
@@ -794,20 +856,19 @@ export default function OutreachPage() {
 
                 {/* Primary Action Button Bar */}
                 <div className="mt-4 flex flex-wrap items-center gap-2">
-                  {/* OPEN & COPY (PRIMARY) */}
+                  {/* OPEN & COPY (PRIMARY - INSTAGRAM GRADIENT) */}
                   <button
                     onClick={() => handleOpenAndCopy(currentLead)}
-                    className="flex-1 min-w-50 flex items-center justify-center gap-2 rounded-xl bg-zinc-950 hover:bg-black px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition active:scale-[0.98] cursor-pointer"
+                    className="btn-insta flex-1 min-w-50 flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold shadow-xs active:scale-[0.98] cursor-pointer"
                   >
-
                     {copiedId === currentLead.id ? (
                       <>
-                        <Check className="h-4 w-4 text-emerald-400" />
+                        <Check className="h-4 w-4 text-white" />
                         <span>COPIED &amp; OPENED!</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="h-4 w-4" />
+                        <Copy className="h-4 w-4 text-white" />
                         <span>OPEN &amp; COPY (Press O)</span>
                       </>
                     )}
@@ -954,8 +1015,8 @@ export default function OutreachPage() {
         </div>
       </div>
 
-      {/* Floating Ergonomics Bar (Bottom Dock) */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 rounded-full bg-zinc-950/90 text-white px-4 py-1.5 backdrop-blur-md border border-zinc-800 shadow-xl text-xs">
+      {/* Floating Ergonomics Bar (Desktop Bottom Dock) */}
+      <div className="hidden md:flex fixed bottom-4 left-1/2 -translate-x-1/2 z-30 items-center gap-3 rounded-full bg-zinc-950/90 text-white px-4 py-1.5 backdrop-blur-md border border-zinc-800 shadow-xl text-xs">
         <span className="text-[11px] font-medium text-zinc-400 hidden sm:inline-block">Workflow:</span>
         <div className="flex items-center gap-2 text-[11px]">
           <span className="flex items-center gap-1">
