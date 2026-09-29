@@ -225,6 +225,44 @@ export async function createCampaign(campaign: Omit<Campaign, 'id' | 'created_at
   return newCamp;
 }
 
+export async function updateCampaign(id: string, updates: Partial<Campaign>): Promise<Campaign | null> {
+  const now = new Date().toISOString();
+  const { id: _id, created_at: _created, ...safeUpdates } = updates as any;
+
+  if (isSupabaseConfigured && supabaseServer) {
+    try {
+      const { data, error } = await supabaseServer
+        .from('campaigns')
+        .update({ ...safeUpdates, updated_at: now })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (!error && data) {
+        const idx = memoryStore.campaigns.findIndex(c => c.id === id);
+        if (idx !== -1) {
+          memoryStore.campaigns[idx] = data as Campaign;
+        }
+        return data as Campaign;
+      }
+    } catch (e) {
+      console.warn('[DB] Supabase campaign update failed, updating memory', e);
+    }
+  }
+
+  const idx = memoryStore.campaigns.findIndex(c => c.id === id);
+  if (idx !== -1) {
+    memoryStore.campaigns[idx] = {
+      ...memoryStore.campaigns[idx],
+      ...safeUpdates,
+      updated_at: now
+    };
+    return memoryStore.campaigns[idx];
+  }
+
+  return null;
+}
+
 export async function getLeads(filters?: {
   status?: LeadStatus | 'ALL';
   tier?: string;
