@@ -5,21 +5,12 @@ import Link from 'next/link';
 import {
   Users,
   Search,
-  Filter,
-  ArrowUpDown,
-  ExternalLink,
   ChevronRight,
-  Sparkles,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  MessageSquare,
-  ShieldCheck,
   Send,
   X,
-  FileText
+  ExternalLink
 } from 'lucide-react';
-import { Lead, LeadTier, LeadStatus, OutreachEvent } from '@/types';
+import { Lead, OutreachEvent } from '@/types';
 
 export default function LeadsDatabasePage() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -29,7 +20,6 @@ export default function LeadsDatabasePage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
   const [minScore, setMinScore] = useState<number>(0);
   const [activeLead, setActiveLead] = useState<Lead | null>(null);
-  const [leadEvents, setLeadEvents] = useState<OutreachEvent[]>([]);
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
   const [bulkNotice, setBulkNotice] = useState<string | null>(null);
 
@@ -57,15 +47,6 @@ export default function LeadsDatabasePage() {
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
-
-  const viewLeadDrawer = async (lead: Lead) => {
-    setActiveLead(lead);
-    // Fetch events history for this lead
-    try {
-      const res = await fetch(`/api/leads?search=${lead.instagram_username}`);
-      // Events are tracked; let's show status timeline
-    } catch (e) {}
-  };
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -111,23 +92,23 @@ export default function LeadsDatabasePage() {
     <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6">
       {/* Toast Notice */}
       {bulkNotice && (
-        <div className="fixed bottom-6 right-6 z-50 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-xl">
+        <div className="fixed bottom-6 right-6 z-50 rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-xl">
           {bulkNotice}
         </div>
       )}
 
       {/* Header */}
-      <div className="border-b border-[#262938] pb-5">
+      <div className="border-b border-slate-200 pb-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Lead Database</h1>
-            <p className="mt-1 text-xs text-gray-400">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">Lead Database</h1>
+            <p className="mt-1 text-xs text-slate-500">
               Filterable registry of discovered creators, qualification reasons, lead scores, and outreach statuses.
             </p>
           </div>
           <Link
             href="/"
-            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-indigo-500 transition"
+            className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-black transition shadow-2xs"
           >
             <Send className="h-3.5 w-3.5" />
             <span>Open Outreach Queue</span>
@@ -136,17 +117,17 @@ export default function LeadsDatabasePage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 bg-[#141620] p-3 rounded-xl border border-[#262938]">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Search */}
           <div className="relative w-64">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-500" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
             <input
               type="text"
               placeholder="Search username, bio, name..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full rounded-lg bg-[#0e1017] pl-8 pr-3 py-1.5 text-xs text-white placeholder-gray-500 border border-[#262938] focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-lg bg-slate-50 pl-8 pr-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 border border-slate-200 focus:border-slate-800 focus:outline-none"
             />
           </div>
 
@@ -154,7 +135,7 @@ export default function LeadsDatabasePage() {
           <select
             value={selectedTier}
             onChange={e => setSelectedTier(e.target.value)}
-            className="rounded-lg bg-[#0e1017] px-3 py-1.5 text-xs text-white border border-[#262938] focus:border-indigo-500 focus:outline-none"
+            className="rounded-lg bg-slate-50 px-3 py-1.5 text-xs text-slate-700 border border-slate-200 focus:border-slate-800 focus:outline-none"
           >
             <option value="ALL">All Tiers</option>
             <option value="Tier A">Tier A (Creator-Operators)</option>
@@ -166,7 +147,7 @@ export default function LeadsDatabasePage() {
           <select
             value={selectedStatus}
             onChange={e => setSelectedStatus(e.target.value)}
-            className="rounded-lg bg-[#0e1017] px-3 py-1.5 text-xs text-white border border-[#262938] focus:border-indigo-500 focus:outline-none"
+            className="rounded-lg bg-slate-50 px-3 py-1.5 text-xs text-slate-700 border border-slate-200 focus:border-slate-800 focus:outline-none"
           >
             <option value="ALL">All Statuses</option>
             <option value="QUEUED">Queued</option>
@@ -184,7 +165,7 @@ export default function LeadsDatabasePage() {
           <select
             value={minScore}
             onChange={e => setMinScore(parseInt(e.target.value, 10))}
-            className="rounded-lg bg-[#0e1017] px-3 py-1.5 text-xs text-white border border-[#262938] focus:border-indigo-500 focus:outline-none"
+            className="rounded-lg bg-slate-50 px-3 py-1.5 text-xs text-slate-700 border border-slate-200 focus:border-slate-800 focus:outline-none"
           >
             <option value={0}>Any Score</option>
             <option value={50}>Score ≥ 50</option>
@@ -193,40 +174,40 @@ export default function LeadsDatabasePage() {
           </select>
         </div>
 
-        {/* Bulk Action Controls (Prompt Section 25: Bulk Skip, Bulk Snooze. Strictly NO bulk send) */}
+        {/* Bulk Action Controls */}
         {selectedLeadIds.length > 0 && (
-          <div className="flex items-center gap-2 bg-[#1b1e2b] px-3 py-1.5 rounded-lg border border-[#363b50]">
-            <span className="text-xs font-semibold text-indigo-300">
+          <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+            <span className="text-xs font-bold text-slate-800">
               {selectedLeadIds.length} selected
             </span>
             <button
               onClick={handleBulkSkip}
-              className="rounded bg-red-950/60 hover:bg-red-900 px-2.5 py-1 text-[11px] font-medium text-red-300 border border-red-800/40"
+              className="rounded bg-rose-50 hover:bg-rose-100 px-2.5 py-1 text-[11px] font-semibold text-rose-700 border border-rose-200 transition cursor-pointer"
             >
               Bulk Skip
             </button>
             <button
               onClick={() => handleBulkSnooze(3)}
-              className="rounded bg-amber-950/60 hover:bg-amber-900 px-2.5 py-1 text-[11px] font-medium text-amber-300 border border-amber-800/40"
+              className="rounded bg-amber-50 hover:bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-800 border border-amber-200 transition cursor-pointer"
             >
               Bulk Snooze (3d)
             </button>
-            <span className="text-[10px] text-gray-500 italic">(Manual send required for safety)</span>
+            <span className="text-[10px] text-slate-400 italic">(Manual send required for safety)</span>
           </div>
         )}
       </div>
 
       {/* Leads Table */}
-      <div className="mt-4 overflow-x-auto rounded-xl border border-[#262938] bg-[#141620]">
-        <table className="w-full text-left text-xs text-gray-300">
-          <thead className="border-b border-[#262938] bg-[#0f1118] text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+      <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-2xs">
+        <table className="w-full text-left text-xs text-slate-700">
+          <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
             <tr>
               <th className="p-3 w-10">
                 <input
                   type="checkbox"
                   onChange={handleSelectAll}
                   checked={selectedLeadIds.length > 0 && selectedLeadIds.length === leads.length}
-                  className="rounded border-gray-600 bg-gray-700 text-indigo-600 focus:ring-0"
+                  className="rounded border-slate-300 text-slate-900 focus:ring-0"
                 />
               </th>
               <th className="p-3">Creator / Profile</th>
@@ -238,16 +219,16 @@ export default function LeadsDatabasePage() {
               <th className="p-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#1e212f]">
+          <tbody className="divide-y divide-slate-100">
             {loading ? (
               <tr>
-                <td colSpan={8} className="p-8 text-center text-xs text-gray-500">
+                <td colSpan={8} className="p-8 text-center text-xs text-slate-400">
                   Loading prospects...
                 </td>
               </tr>
             ) : leads.length === 0 ? (
               <tr>
-                <td colSpan={8} className="p-8 text-center text-xs text-gray-500">
+                <td colSpan={8} className="p-8 text-center text-xs text-slate-400">
                   No leads found matching your criteria.
                 </td>
               </tr>
@@ -257,15 +238,15 @@ export default function LeadsDatabasePage() {
                 return (
                   <tr
                     key={lead.id}
-                    className="hover:bg-[#181a26] transition cursor-pointer"
-                    onClick={() => viewLeadDrawer(lead)}
+                    className="hover:bg-slate-50 transition cursor-pointer"
+                    onClick={() => setActiveLead(lead)}
                   >
                     <td className="p-3" onClick={e => e.stopPropagation()}>
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleSelectLead(lead.id)}
-                        className="rounded border-gray-600 bg-gray-700 text-indigo-600 focus:ring-0"
+                        className="rounded border-slate-300 text-slate-900 focus:ring-0"
                       />
                     </td>
                     <td className="p-3">
@@ -275,16 +256,16 @@ export default function LeadsDatabasePage() {
                           <img
                             src={lead.profile_image_url}
                             alt={lead.instagram_username}
-                            className="h-8 w-8 rounded-full object-cover border border-[#363b50]"
+                            className="h-8 w-8 rounded-full object-cover border border-slate-200"
                           />
                         ) : (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-950 text-xs font-bold text-indigo-300">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700 border border-slate-200">
                             {lead.instagram_username.slice(0, 2).toUpperCase()}
                           </div>
                         )}
                         <div>
-                          <div className="font-semibold text-white">@{lead.instagram_username}</div>
-                          <div className="text-[11px] text-gray-400 truncate max-w-[160px]">
+                          <div className="font-bold text-slate-900">@{lead.instagram_username}</div>
+                          <div className="text-[11px] text-slate-500 truncate max-w-[160px]">
                             {lead.display_name}
                           </div>
                         </div>
@@ -303,21 +284,21 @@ export default function LeadsDatabasePage() {
                         {lead.lead_tier}
                       </span>
                     </td>
-                    <td className="p-3 font-mono font-semibold text-gray-200">
+                    <td className="p-3 font-mono font-semibold text-slate-800">
                       {lead.lead_score} pts
                     </td>
-                    <td className="p-3 font-mono text-gray-300">
+                    <td className="p-3 font-mono text-slate-700">
                       {lead.followers ? lead.followers.toLocaleString() : '—'}
                     </td>
                     <td className="p-3">
                       <div className="flex flex-wrap gap-1 max-w-[220px]">
                         {lead.matched_research.slice(0, 2).map(r => (
-                          <span key={r} className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9px] text-emerald-300 border border-emerald-500/20">
+                          <span key={r} className="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-medium text-emerald-700 border border-emerald-200">
                             {r}
                           </span>
                         ))}
                         {lead.matched_niches.slice(0, 1).map(n => (
-                          <span key={n} className="rounded bg-indigo-500/10 px-1.5 py-0.5 text-[9px] text-indigo-300 border border-indigo-500/20">
+                          <span key={n} className="rounded bg-indigo-50 px-1.5 py-0.5 text-[9px] font-medium text-indigo-700 border border-indigo-200">
                             {n}
                           </span>
                         ))}
@@ -331,12 +312,12 @@ export default function LeadsDatabasePage() {
                             : lead.status === 'REPLIED'
                             ? 'badge-status-replied'
                             : lead.status === 'USED_VAULT'
-                            ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40'
+                            ? 'bg-purple-50 text-purple-700 border border-purple-200'
                             : lead.status === 'SENT_SECOND_REEL'
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                            ? 'bg-amber-50 text-amber-800 border border-amber-200 font-bold'
                             : lead.status === 'PAID'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                            : 'bg-gray-800 text-gray-300 border border-gray-700'
+                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold'
+                            : 'bg-slate-100 text-slate-600 border border-slate-200'
                         }`}
                       >
                         {lead.status}
@@ -344,9 +325,8 @@ export default function LeadsDatabasePage() {
                     </td>
                     <td className="p-3 text-right" onClick={e => e.stopPropagation()}>
                       <button
-                        onClick={() => viewLeadDrawer(lead)}
-                        className="rounded p-1 text-gray-400 hover:text-white hover:bg-[#262938]"
-                        title="View Full Profile & History"
+                        onClick={() => setActiveLead(lead)}
+                        className="rounded p-1 text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition"
                       >
                         <ChevronRight className="h-4 w-4" />
                       </button>
@@ -359,20 +339,20 @@ export default function LeadsDatabasePage() {
         </table>
       </div>
 
-      {/* Lead Details Drawer / Slide-Over */}
+      {/* Lead Details Drawer */}
       {activeLead && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
-          <div className="h-full w-full max-w-lg bg-[#141622] p-6 shadow-2xl border-l border-[#262938] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-[#262938] pb-4">
+        <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/30 backdrop-blur-2xs">
+          <div className="h-full w-full max-w-lg bg-white p-6 shadow-2xl border-l border-slate-200 overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white">@{activeLead.instagram_username}</h3>
+                <h3 className="text-base font-bold text-slate-900">@{activeLead.instagram_username}</h3>
                 <span className="badge-tier-a text-[10px] px-1.5 py-0.5 rounded font-bold">
                   {activeLead.lead_tier}
                 </span>
               </div>
               <button
                 onClick={() => setActiveLead(null)}
-                className="rounded p-1 text-gray-400 hover:text-white"
+                className="rounded p-1 text-slate-400 hover:text-slate-700"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -380,22 +360,22 @@ export default function LeadsDatabasePage() {
 
             <div className="mt-4 space-y-4 text-xs">
               <div>
-                <div className="text-[11px] text-gray-400 font-semibold uppercase">Bio</div>
-                <p className="mt-1 bg-[#0d0f17] p-3 rounded-lg border border-[#222533] text-gray-200 whitespace-pre-wrap leading-relaxed">
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bio</div>
+                <p className="mt-1 bg-slate-50 p-3 rounded-lg border border-slate-200 text-slate-800 whitespace-pre-wrap leading-relaxed">
                   {activeLead.bio || 'No bio'}
                 </p>
               </div>
 
               <div>
-                <div className="text-[11px] text-gray-400 font-semibold uppercase">Qualification Breakdown</div>
-                <div className="mt-1 p-2.5 rounded-lg bg-indigo-950/30 border border-indigo-500/20 text-indigo-200">
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Qualification Breakdown</div>
+                <div className="mt-1 p-2.5 rounded-lg bg-indigo-50/70 border border-indigo-100 text-indigo-950 font-medium">
                   {activeLead.qualification_reason}
                 </div>
               </div>
 
               <div>
-                <div className="text-[11px] text-gray-400 font-semibold uppercase">Prepared Personalized Outreach</div>
-                <p className="mt-1 bg-[#0d0f17] p-3 rounded-lg border border-[#222533] text-gray-200 whitespace-pre-wrap font-sans leading-relaxed">
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Prepared Personalized Outreach</div>
+                <p className="mt-1 bg-slate-50 p-3 rounded-lg border border-slate-200 text-slate-800 whitespace-pre-wrap font-sans leading-relaxed">
                   {activeLead.prepared_message}
                 </p>
               </div>
@@ -405,7 +385,7 @@ export default function LeadsDatabasePage() {
                   href={activeLead.instagram_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 py-2.5 font-bold text-white transition"
+                  className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-slate-900 hover:bg-black py-2.5 font-bold text-white transition shadow-2xs"
                 >
                   <span>Open Profile</span>
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -414,7 +394,7 @@ export default function LeadsDatabasePage() {
                   href={`https://ig.me/m/${activeLead.instagram_username}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#1e2130] hover:bg-[#282c40] py-2.5 font-bold text-indigo-300 border border-[#363b50] transition"
+                  className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 py-2.5 font-bold text-indigo-700 border border-indigo-200 transition"
                 >
                   <span>Open Instagram DM</span>
                   <ExternalLink className="h-3.5 w-3.5" />
