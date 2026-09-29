@@ -351,3 +351,13 @@ VALUES (
   'Paritosh'
 )
 ON CONFLICT (id) DO NOTHING;
+
+-- 15. Auth Rate Limiting & IP Lockout Table
+CREATE TABLE IF NOT EXISTS auth_lockouts (
+  ip TEXT PRIMARY KEY,
+  failed_attempts INTEGER NOT NULL DEFAULT 0,
+  locked_until TIMESTAMPTZ,
+  last_attempt_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+ALTER TABLE auth_lockouts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow service role all on auth_lockouts" ON auth_lockouts FOR ALL TO service_role USING (true) WITH CHECK (true);
