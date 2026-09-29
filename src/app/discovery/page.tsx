@@ -107,20 +107,20 @@ export default function DiscoveryPage() {
       <div className="border-b border-zinc-200/80 pb-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-semibold tracking-tight text-zinc-950">Run Prospect Discovery</h1>
-              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-mono font-medium text-zinc-600 border border-zinc-200/60">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-lg font-medium tracking-tight text-zinc-900">Run Prospect Discovery</h1>
+              <span className="inline-flex items-center rounded-md bg-zinc-100 px-2.5 py-0.5 text-[10px] font-mono font-medium text-zinc-600 border border-zinc-200/70 shrink-0 whitespace-nowrap">
                 Deterministic Search Pipeline
               </span>
             </div>
-            <p className="mt-1 text-xs text-zinc-500 max-w-xl leading-relaxed">
+            <p className="mt-1 text-xs text-zinc-500 max-w-xl leading-relaxed font-normal">
               Scrapes public Instagram profiles, filters exclusions, calculates lead score, and prepares personalized messages for Vault.
             </p>
           </div>
 
           <Link
             href="/"
-            className="flex items-center gap-1.5 rounded-lg bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 border border-zinc-200 hover:bg-zinc-50 transition shadow-2xs"
+            className="flex items-center justify-center gap-1.5 rounded-xl bg-white px-3.5 py-2 text-xs font-medium text-zinc-700 border border-zinc-200 hover:bg-zinc-50 transition shadow-2xs w-full sm:w-auto"
           >
             <span>View Today&apos;s Outreach Queue</span>
             <ArrowRight className="h-3.5 w-3.5 text-zinc-400" />
@@ -134,15 +134,15 @@ export default function DiscoveryPage() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-sm font-bold text-rose-900">Monthly Discovery Budget Reached</h3>
-              <p className="mt-1 text-xs text-rose-700 leading-relaxed">
+              <h3 className="text-sm font-medium text-rose-900">Monthly Discovery Budget Reached</h3>
+              <p className="mt-1 text-xs text-rose-700 leading-relaxed font-normal">
                 To guarantee zero unexpected out-of-pocket costs, further discovery runs are prevented until the next monthly billing cycle.
               </p>
               <div className="mt-3 flex flex-wrap gap-4 text-xs font-mono">
-                <div className="text-zinc-700">Monthly Ceiling: <span className="font-bold text-zinc-900">${budgetStatus?.monthly_budget_usd.toFixed(2)}</span></div>
-                <div className="text-rose-700">Estimated Usage: <span className="font-bold">${budgetStatus?.estimated_usage_usd.toFixed(2)}</span></div>
-                <div className="text-emerald-700">Remaining: <span className="font-bold">${budgetStatus?.remaining_budget_usd.toFixed(2)}</span></div>
-                <div className="text-zinc-700">Days Elapsed: <span className="font-bold">{budgetStatus?.days_elapsed} / 30</span></div>
+                <div className="text-zinc-700">Monthly Ceiling: <span className="font-semibold text-zinc-900">${budgetStatus?.monthly_budget_usd.toFixed(2)}</span></div>
+                <div className="text-rose-700">Estimated Usage: <span className="font-semibold">${budgetStatus?.estimated_usage_usd.toFixed(2)}</span></div>
+                <div className="text-emerald-700">Remaining: <span className="font-semibold">${budgetStatus?.remaining_budget_usd.toFixed(2)}</span></div>
+                <div className="text-zinc-700">Days Elapsed: <span className="font-semibold">{budgetStatus?.days_elapsed} / 30</span></div>
               </div>
             </div>
           </div>
@@ -155,8 +155,8 @@ export default function DiscoveryPage() {
         <div className="lg:col-span-7 space-y-5">
           {/* 1. Campaign Selection */}
           <div className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs">
-            <label className="text-xs font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-1.5">
-              <Layers className="h-4 w-4 text-zinc-900" />
+            <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+              <Layers className="h-3.5 w-3.5 text-zinc-500" />
               <span>Target Campaign</span>
             </label>
             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -164,14 +164,14 @@ export default function DiscoveryPage() {
                 <button
                   key={camp.id}
                   onClick={() => setSelectedCampaignId(camp.id)}
-                  className={`text-left p-3 rounded-xl border text-xs transition cursor-pointer ${
+                  className={`text-left p-3.5 rounded-xl border text-xs transition cursor-pointer ${
                     selectedCampaignId === camp.id
                       ? 'bg-zinc-50 border-zinc-900 text-zinc-900 shadow-2xs ring-1 ring-zinc-900/10'
                       : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50/60 hover:border-zinc-300'
                   }`}
                 >
-                  <div className="font-semibold text-zinc-950">{camp.name}</div>
-                  <div className="mt-1 text-[11px] text-zinc-500 line-clamp-2 leading-relaxed">{camp.description}</div>
+                  <div className="font-medium text-zinc-900">{camp.name}</div>
+                  <div className="mt-1 text-[11px] text-zinc-500 font-normal line-clamp-2 leading-relaxed">{camp.description}</div>
                 </button>
               ))}
             </div>
@@ -180,21 +180,21 @@ export default function DiscoveryPage() {
           {/* 2. Follower Range Configuration */}
           <div className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-1.5">
-                <Users className="h-4 w-4 text-zinc-900" />
+              <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Users className="h-3.5 w-3.5 text-zinc-500" />
                 <span>Follower Thresholds</span>
               </label>
-              <span className="text-xs font-mono font-semibold text-zinc-900">
+              <span className="text-xs font-mono font-medium text-zinc-700">
                 {minFollowers.toLocaleString()} – {maxFollowers.toLocaleString()} followers
               </span>
             </div>
-            <p className="mt-1 text-xs text-zinc-500 leading-relaxed">
+            <p className="mt-1 text-xs text-zinc-500 font-normal leading-relaxed">
               Default is 1K to 20K. Focuses on emerging creator-operators where direct founder response is highest.
             </p>
 
             <div className="mt-4 grid grid-cols-2 gap-4">
               <div>
-                <span className="text-[11px] font-semibold text-zinc-600">Minimum Followers</span>
+                <span className="text-[11px] font-medium text-zinc-600">Minimum Followers</span>
                 <select
                   value={minFollowers}
                   onChange={e => setMinFollowers(parseInt(e.target.value, 10))}
@@ -281,37 +281,37 @@ export default function DiscoveryPage() {
         <div className="lg:col-span-5 space-y-5">
           {/* Pre-flight Budget & Limits Card */}
           <div className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs">
-            <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-1.5">
+            <h3 className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
               <DollarSign className="h-4 w-4 text-emerald-600" />
               <span>Cost &amp; Run Limits</span>
             </h3>
 
             <div className="mt-3 space-y-2.5 divide-y divide-zinc-100 text-xs">
               <div className="flex justify-between items-center pt-2">
-                <span className="text-zinc-500">Monthly Budget Ceiling:</span>
-                <span className="font-mono font-bold text-zinc-900">
+                <span className="text-zinc-500 font-normal">Monthly Budget Ceiling:</span>
+                <span className="font-mono font-medium text-zinc-900">
                   ${budgetStatus ? budgetStatus.monthly_budget_usd.toFixed(2) : '4.50'}
                 </span>
               </div>
               <div className="flex justify-between items-center pt-2">
-                <span className="text-zinc-500">Estimated Usage to Date:</span>
-                <span className="font-mono font-bold text-zinc-700">
+                <span className="text-zinc-500 font-normal">Estimated Usage to Date:</span>
+                <span className="font-mono font-medium text-zinc-700">
                   ${budgetStatus ? budgetStatus.estimated_usage_usd.toFixed(2) : '0.00'}
                 </span>
               </div>
               <div className="flex justify-between items-center pt-2">
-                <span className="text-zinc-500">Remaining Budget:</span>
-                <span className="font-mono font-bold text-emerald-700">
+                <span className="text-zinc-500 font-normal">Remaining Budget:</span>
+                <span className="font-mono font-medium text-emerald-700">
                   ${budgetStatus ? budgetStatus.remaining_budget_usd.toFixed(2) : '4.50'}
                 </span>
               </div>
               <div className="flex justify-between items-center pt-2">
-                <span className="text-zinc-500">Max Raw Profiles / Run:</span>
-                <span className="font-mono text-zinc-700">150 profiles</span>
+                <span className="text-zinc-500 font-normal">Max Raw Profiles / Run:</span>
+                <span className="font-mono text-zinc-700 font-normal">150 profiles</span>
               </div>
               <div className="flex justify-between items-center pt-2">
-                <span className="text-zinc-500">Daily Qualified Lead Cap:</span>
-                <span className="font-mono text-zinc-900 font-semibold">60 leads / day</span>
+                <span className="text-zinc-500 font-normal">Daily Qualified Lead Cap:</span>
+                <span className="font-mono text-zinc-800 font-medium">60 leads / day</span>
               </div>
             </div>
 
@@ -319,10 +319,10 @@ export default function DiscoveryPage() {
             <div className="mt-4 rounded-xl bg-zinc-50 p-3.5 border border-zinc-200/80">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-bold text-zinc-900">
+                  <div className="text-xs font-medium text-zinc-900">
                     {providerInfo?.isMock ? 'Sandbox Simulator' : 'Apify Live Actor'}
                   </div>
-                  <div className="text-[11px] text-zinc-500">
+                  <div className="text-[11px] text-zinc-500 font-normal mt-0.5">
                     {forceMock ? 'Zero-cost test profiles' : 'Live public Instagram search'}
                   </div>
                 </div>
@@ -336,7 +336,7 @@ export default function DiscoveryPage() {
                   <div className="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-zinc-950"></div>
                 </label>
               </div>
-              <div className="mt-2 text-[10px] text-zinc-500 leading-normal">
+              <div className="mt-2 text-[10px] text-zinc-500 leading-normal font-normal">
                 Toggle Sandbox mode on to test the full pipeline and scoring without consuming Apify credits.
               </div>
             </div>
@@ -345,7 +345,7 @@ export default function DiscoveryPage() {
             <button
               onClick={handleRunDiscovery}
               disabled={isRunning || isBudgetBlocked}
-              className={`mt-5 w-full flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold shadow-xs transition cursor-pointer active:scale-95 ${
+              className={`mt-5 w-full flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-medium shadow-xs transition cursor-pointer active:scale-95 ${
                 isBudgetBlocked
                   ? 'bg-zinc-200 cursor-not-allowed text-zinc-400'
                   : isRunning

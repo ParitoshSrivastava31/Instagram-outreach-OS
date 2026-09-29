@@ -167,14 +167,14 @@ export default function CampaignsPage() {
       <div className="border-b border-zinc-200/80 pb-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-lg font-semibold tracking-tight text-zinc-950">Campaign Groups</h1>
-            <p className="mt-1 text-xs text-zinc-500 max-w-xl leading-relaxed">
+            <h1 className="text-lg font-medium tracking-tight text-zinc-900">Campaign Groups</h1>
+            <p className="mt-1 text-xs text-zinc-500 max-w-xl leading-relaxed font-normal">
               Target specific creator niches with tailored follower thresholds (e.g. 5k–50k or 3k–27k), research signals, and daily goals.
             </p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="btn-insta flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white transition shadow-2xs cursor-pointer w-full sm:w-auto"
+            className="btn-insta flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium text-white transition shadow-2xs cursor-pointer w-full sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             <span>Create Custom Campaign</span>
@@ -185,7 +185,7 @@ export default function CampaignsPage() {
       {/* Campaign Cards Grid */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
         {loading ? (
-          <div className="col-span-2 text-center text-xs text-zinc-400 py-12">
+          <div className="col-span-2 text-center text-xs text-zinc-400 py-12 font-normal">
             Loading campaigns...
           </div>
         ) : (
@@ -197,15 +197,15 @@ export default function CampaignsPage() {
               <div>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-zinc-950">{camp.name}</h3>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-sm font-medium text-zinc-900">{camp.name}</h3>
                       {idx === 0 && (
-                        <span className="rounded bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700 border border-indigo-200">
+                        <span className="rounded bg-indigo-50 px-2 py-0.5 text-[10px] font-medium text-indigo-700 border border-indigo-200 shrink-0 whitespace-nowrap">
                           Highest Priority
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-xs text-zinc-500 leading-relaxed">
+                    <p className="mt-1 text-xs text-zinc-500 leading-relaxed font-normal">
                       {camp.description}
                     </p>
                   </div>
@@ -219,7 +219,7 @@ export default function CampaignsPage() {
                       <span>Edit</span>
                     </button>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold border ${
+                      className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium border shrink-0 whitespace-nowrap inline-flex items-center ${
                         camp.is_active
                           ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                           : 'bg-zinc-100 text-zinc-500 border-zinc-200'
@@ -233,20 +233,20 @@ export default function CampaignsPage() {
                 {/* Follower Range & Limits */}
                 <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-zinc-50/70 p-2.5 text-xs border border-zinc-200/80">
                   <div>
-                    <span className="text-[10px] text-zinc-400 font-semibold uppercase">Followers</span>
-                    <div className="font-mono font-bold text-zinc-800">
+                    <span className="text-[10px] text-zinc-400 font-medium uppercase">Followers</span>
+                    <div className="font-mono font-medium text-zinc-800">
                       {formatFollowers(camp.target_min_followers)} – {formatFollowers(camp.target_max_followers)}
                     </div>
                   </div>
                   <div>
-                    <span className="text-[10px] text-zinc-400 font-semibold uppercase">Daily Goal</span>
-                    <div className="font-mono font-bold text-zinc-900">
+                    <span className="text-[10px] text-zinc-400 font-medium uppercase">Daily Goal</span>
+                    <div className="font-mono font-medium text-zinc-900">
                       {camp.daily_limit} qualified
                     </div>
                   </div>
                   <div>
-                    <span className="text-[10px] text-zinc-400 font-semibold uppercase">Max Raw</span>
-                    <div className="font-mono font-bold text-zinc-700">
+                    <span className="text-[10px] text-zinc-400 font-medium uppercase">Max Raw</span>
+                    <div className="font-mono font-medium text-zinc-700">
                       {camp.max_raw_profiles} / run
                     </div>
                   </div>
@@ -255,15 +255,15 @@ export default function CampaignsPage() {
                 {/* Keywords Preview */}
                 <div className="mt-4 space-y-2 text-xs">
                   <div>
-                    <span className="text-[11px] font-semibold text-zinc-600">Research Signals: </span>
+                    <span className="text-[11px] font-medium text-zinc-600">Research Signals: </span>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {(camp.research_keywords || []).slice(0, 4).map(k => (
-                        <span key={k} className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-800 border border-emerald-200">
+                        <span key={k} className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-normal text-emerald-800 border border-emerald-200 shrink-0 whitespace-nowrap">
                           &quot;{k}&quot;
                         </span>
                       ))}
                       {(camp.research_keywords?.length || 0) > 4 && (
-                        <span className="text-[10px] text-zinc-400 self-center">
+                        <span className="text-[10px] text-zinc-400 self-center font-normal">
                           +{camp.research_keywords.length - 4} more
                         </span>
                       )}
@@ -271,15 +271,15 @@ export default function CampaignsPage() {
                   </div>
 
                   <div>
-                    <span className="text-[11px] font-semibold text-zinc-600">Roles: </span>
+                    <span className="text-[11px] font-medium text-zinc-600">Roles: </span>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {(camp.role_keywords || []).slice(0, 3).map(k => (
-                        <span key={k} className="rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium text-zinc-700 border border-zinc-200">
+                        <span key={k} className="rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-normal text-zinc-700 border border-zinc-200 shrink-0 whitespace-nowrap">
                           {k}
                         </span>
                       ))}
                       {(camp.role_keywords?.length || 0) > 3 && (
-                        <span className="text-[10px] text-zinc-400 self-center">
+                        <span className="text-[10px] text-zinc-400 self-center font-normal">
                           +{camp.role_keywords.length - 3} more
                         </span>
                       )}
@@ -299,7 +299,7 @@ export default function CampaignsPage() {
                 </button>
                 <Link
                   href={`/discovery?campaignId=${camp.id}`}
-                  className="btn-insta flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition shadow-2xs active:scale-95"
+                  className="btn-insta flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition shadow-2xs active:scale-95"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>Launch Discovery</span>
@@ -316,8 +316,8 @@ export default function CampaignsPage() {
           <form onSubmit={handleUpdateCampaign} className="w-full max-w-lg rounded-2xl bg-white p-4 sm:p-6 border border-zinc-200 shadow-2xl my-auto max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
               <div>
-                <h3 className="text-base font-semibold text-zinc-950">Edit Campaign Settings</h3>
-                <p className="mt-0.5 text-xs text-zinc-500">ID: <span className="font-mono">{editingCampaign.id}</span></p>
+                <h3 className="text-base font-medium text-zinc-900">Edit Campaign Settings</h3>
+                <p className="mt-0.5 text-xs text-zinc-500 font-normal">ID: <span className="font-mono">{editingCampaign.id}</span></p>
               </div>
               <button
                 type="button"
@@ -330,29 +330,29 @@ export default function CampaignsPage() {
 
             <div className="mt-4 space-y-3.5 text-xs max-h-[70vh] overflow-y-auto pr-1">
               <div>
-                <label className="font-semibold text-zinc-700">Campaign Name</label>
+                <label className="font-medium text-zinc-700">Campaign Name</label>
                 <input
                   type="text"
                   required
                   value={editName}
                   onChange={e => setEditName(e.target.value)}
-                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
+                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-normal"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-zinc-700">Description</label>
+                <label className="font-medium text-zinc-700">Description</label>
                 <textarea
                   rows={2}
                   value={editDesc}
                   onChange={e => setEditDesc(e.target.value)}
-                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
+                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-normal"
                 />
               </div>
 
               {/* Follower Range (The user's key requirement: 5k-50k, 3k-27k, etc.) */}
               <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-3.5">
-                <span className="font-semibold text-zinc-900 block mb-2">Target Follower Thresholds</span>
+                <span className="font-medium text-zinc-900 block mb-2">Target Follower Thresholds</span>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-[11px] font-medium text-zinc-600">Min Followers</label>
@@ -363,9 +363,9 @@ export default function CampaignsPage() {
                       required
                       value={editMinFollowers}
                       onChange={e => setEditMinFollowers(parseInt(e.target.value, 10) || 0)}
-                      className="mt-1 w-full rounded-lg bg-white p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:outline-none font-mono"
+                      className="mt-1 w-full rounded-lg bg-white p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:outline-none font-mono font-normal"
                     />
-                    <span className="text-[10px] text-zinc-400 mt-1 block">Preview: {formatFollowers(editMinFollowers)}</span>
+                    <span className="text-[10px] text-zinc-400 mt-1 block font-normal">Preview: {formatFollowers(editMinFollowers)}</span>
                   </div>
                   <div>
                     <label className="text-[11px] font-medium text-zinc-600">Max Followers</label>
@@ -376,9 +376,9 @@ export default function CampaignsPage() {
                       required
                       value={editMaxFollowers}
                       onChange={e => setEditMaxFollowers(parseInt(e.target.value, 10) || 0)}
-                      className="mt-1 w-full rounded-lg bg-white p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:outline-none font-mono"
+                      className="mt-1 w-full rounded-lg bg-white p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:outline-none font-mono font-normal"
                     />
-                    <span className="text-[10px] text-zinc-400 mt-1 block">Preview: {formatFollowers(editMaxFollowers)}</span>
+                    <span className="text-[10px] text-zinc-400 mt-1 block font-normal">Preview: {formatFollowers(editMaxFollowers)}</span>
                   </div>
                 </div>
               </div>
@@ -386,60 +386,60 @@ export default function CampaignsPage() {
               {/* Quotas */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-zinc-700">Daily Qualified Lead Cap</label>
+                  <label className="font-medium text-zinc-700">Daily Qualified Lead Cap</label>
                   <input
                     type="number"
                     min={1}
                     max={200}
                     value={editDailyLimit}
                     onChange={e => setEditDailyLimit(parseInt(e.target.value, 10) || 60)}
-                    className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-mono"
+                    className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-mono font-normal"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-zinc-700">Max Raw Profiles / Run</label>
+                  <label className="font-medium text-zinc-700">Max Raw Profiles / Run</label>
                   <input
                     type="number"
                     min={10}
                     max={500}
                     value={editMaxRaw}
                     onChange={e => setEditMaxRaw(parseInt(e.target.value, 10) || 150)}
-                    className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-mono"
+                    className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-mono font-normal"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-semibold text-zinc-700">Research Signals / Keywords (comma separated)</label>
+                <label className="font-medium text-zinc-700">Research Signals / Keywords (comma separated)</label>
                 <input
                   type="text"
                   value={editResearchKeywords}
                   onChange={e => setEditResearchKeywords(e.target.value)}
                   placeholder="save this, hooks, framework, swipe file"
-                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
+                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-normal"
                 />
-                <span className="text-[10px] text-zinc-400">Creators whose bio includes these signals score higher for Vault.</span>
+                <span className="text-[10px] text-zinc-400 font-normal">Creators whose bio includes these signals score higher for Vault.</span>
               </div>
 
               <div>
-                <label className="font-semibold text-zinc-700">Role Keywords (comma separated)</label>
+                <label className="font-medium text-zinc-700">Role Keywords (comma separated)</label>
                 <input
                   type="text"
                   value={editRoleKeywords}
                   onChange={e => setEditRoleKeywords(e.target.value)}
                   placeholder="content creator, strategist, educator"
-                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
+                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-normal"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-zinc-700">Excluded / Negative Keywords (comma separated)</label>
+                <label className="font-medium text-zinc-700">Excluded / Negative Keywords (comma separated)</label>
                 <input
                   type="text"
                   value={editExcludedKeywords}
                   onChange={e => setEditExcludedKeywords(e.target.value)}
                   placeholder="meme, giveaway, fan page, repost"
-                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
+                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-normal"
                 />
               </div>
 
@@ -451,7 +451,7 @@ export default function CampaignsPage() {
                   onChange={e => setEditIsActive(e.target.checked)}
                   className="h-4 w-4 rounded border-zinc-300 text-zinc-950 focus:ring-zinc-900"
                 />
-                <label htmlFor="editIsActive" className="text-xs font-semibold text-zinc-800 cursor-pointer">
+                <label htmlFor="editIsActive" className="text-xs font-medium text-zinc-800 cursor-pointer">
                   Campaign is Active (available for Discovery runs)
                 </label>
               </div>
@@ -468,7 +468,7 @@ export default function CampaignsPage() {
               <button
                 type="submit"
                 disabled={savingEdit}
-                className="btn-insta flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50 cursor-pointer shadow-xs active:scale-95"
+                className="btn-insta flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-medium text-white disabled:opacity-50 cursor-pointer shadow-xs active:scale-95"
               >
                 {savingEdit ? (
                   <div className="h-3.5 w-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -490,8 +490,8 @@ export default function CampaignsPage() {
           <form onSubmit={handleCreateCampaign} className="w-full max-w-lg rounded-2xl bg-white p-4 sm:p-6 border border-zinc-200 shadow-2xl my-auto max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
               <div>
-                <h3 className="text-base font-semibold text-zinc-950">Create Custom Prospect Campaign</h3>
-                <p className="mt-0.5 text-xs text-zinc-500">Define search queries and audience boundaries for Vault.</p>
+                <h3 className="text-base font-medium text-zinc-900">Create Custom Prospect Campaign</h3>
+                <p className="mt-0.5 text-xs text-zinc-500 font-normal">Define search queries and audience boundaries for Vault.</p>
               </div>
               <button
                 type="button"
@@ -504,61 +504,61 @@ export default function CampaignsPage() {
 
             <div className="mt-4 space-y-3 text-xs overflow-y-auto pr-1">
               <div>
-                <label className="font-semibold text-zinc-700">Campaign Name</label>
+                <label className="font-medium text-zinc-700">Campaign Name</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Design & UX Framework Creators"
                   value={newName}
                   onChange={e => setNewName(e.target.value)}
-                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
+                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-normal"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-zinc-700">Description</label>
+                <label className="font-medium text-zinc-700">Description</label>
                 <input
                   type="text"
                   placeholder="e.g. UI designers and design thinkers who save Figma teardowns"
                   value={newDesc}
                   onChange={e => setNewDesc(e.target.value)}
-                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
+                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-normal"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-zinc-700">Min Followers</label>
+                  <label className="font-medium text-zinc-700">Min Followers</label>
                   <input
                     type="number"
                     min={100}
                     step={500}
                     value={newMinFollowers}
                     onChange={e => setNewMinFollowers(parseInt(e.target.value, 10))}
-                    className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-mono"
+                    className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-mono font-normal"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-zinc-700">Max Followers</label>
+                  <label className="font-medium text-zinc-700">Max Followers</label>
                   <input
                     type="number"
                     min={500}
                     step={1000}
                     value={newMaxFollowers}
                     onChange={e => setNewMaxFollowers(parseInt(e.target.value, 10))}
-                    className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-mono"
+                    className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-mono font-normal"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-semibold text-zinc-700">Search Queries (comma separated)</label>
+                <label className="font-medium text-zinc-700">Search Queries (comma separated)</label>
                 <input
                   type="text"
                   value={newKeywords}
                   onChange={e => setNewKeywords(e.target.value)}
                   placeholder="content creator hooks, UGC creator framework"
-                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
+                  className="mt-1 w-full rounded-lg bg-zinc-50/60 p-2 text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none font-normal"
                 />
               </div>
             </div>
@@ -573,7 +573,7 @@ export default function CampaignsPage() {
               </button>
               <button
                 type="submit"
-                className="btn-insta rounded-lg px-4 py-1.5 text-xs font-semibold text-white cursor-pointer shadow-xs active:scale-95"
+                className="btn-insta rounded-lg px-4 py-1.5 text-xs font-medium text-white cursor-pointer shadow-xs active:scale-95"
               >
                 Save Campaign
               </button>
