@@ -95,18 +95,25 @@ A clean, executive-grade information architecture inspired by Linear, Apple, and
 
 ## 4. Layout & Grid Rhythm
 
-- **Top Navbar**: 48px height, hairline bottom border, discrete tabs with pill indicator.
+- **Top Navbar**: 48px–50px height, backdrop blur (`bg-white/80 backdrop-blur-md`), hairline border (`border-zinc-200/70`).
+  - **Core Navigation**: Segmented primary tabs (`Queue`, `Discovery`, `Database`, `Campaigns`) in a subtle pill container.
+  - **Secondary Tools**: Icon-only buttons with instant floating tooltips for internal utilities (`Templates`, `Analytics`, `Settings`, `Shortcuts`). No text clunkiness.
+  - **Telemetry**: Compact mono budget badge (`$0.00 / $4.50`) and glowing status pulse dot (`Sandbox` / `Live`).
 - **Today's Outreach**:
+  - **Header Stat Strip**: Unified segmented bar with hairline vertical dividers, clean status dots, and crisp mono counts.
   - Two-column workbench: 42% left column (Lead Queue List), 58% right column (Focused Lead Inspection & Action).
-  - Left Queue: Scrollable list of structured lead tiles with smooth hover and clean 2px selected indicator.
+  - Left Queue: Scrollable list of structured lead tiles with smooth hover, subtle left border accent, and clean selection ring.
   - Right Workspace: Sticky card with complete creator context, objective signals, editable personalized copy, and prominent primary action.
-- **Bottom Helper Bar**: Ultra-minimalist 36px bar displaying keyboard hotkeys with clean zinc keycaps.
+  - Empty State: Inviting, high-craft empty queue card on left, paired with a Linear-style "Workflow Blueprint" on right explaining the 3-step engine.
+- **Ergonomics Bar**: Centered floating docked pill bar (`fixed bottom-4 left-1/2 -translate-x-1/2`) with dark glassmorphism and crisp keycaps (`O`, `S`, `R`, `X`, `Z`, `J / K`).
 
 ---
 
 ## 5. Anti-Patterns (Eliminating AI Slop)
 
+- **NO** verbose, crowded headers with full text buttons for secondary tools. Use clean icon targets with smooth tooltips.
 - **NO** multicolor tag dumps (e.g. 10 colored pills side-by-side). Replace with an elegant 3-attribute metadata list: `Role`, `Signals`, `Niche`.
+- **NO** separate bulky boxes for statistics. Use an integrated, segmented stat strip with hairline dividers.
 - **NO** neon glowing gradients or dark-mode blur effects.
 - **NO** redundant strings like repeating `"Tier A · ..."` three times on the same card.
 - **NO** generic mock data in production builds. Start with a clean database ready for real Apify runs.

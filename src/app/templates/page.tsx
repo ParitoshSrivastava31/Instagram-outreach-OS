@@ -45,77 +45,77 @@ export default function TemplatesPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 pt-6 sm:px-6">
       {/* Header */}
-      <div className="border-b border-slate-200 pb-5">
+      <div className="border-b border-zinc-200/80 pb-5">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">Deterministic Message Templates</h1>
-          <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
+          <h1 className="text-lg font-semibold tracking-tight text-zinc-950">Deterministic Message Templates</h1>
+          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-mono font-medium text-emerald-700 border border-emerald-200">
             Zero AI • 100% Authentic
           </span>
         </div>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-zinc-500 max-w-xl leading-relaxed">
           Tailored templates specifically matched to creator behaviors (e.g. telling people to &apos;save this&apos; or publishing AI workflows).
         </p>
       </div>
 
       {/* Variables & Personalization Guide */}
-      <div className="mt-6 rounded-xl border border-indigo-100 bg-indigo-50/60 p-4 text-xs">
-        <div className="flex items-center gap-2 font-bold text-indigo-900">
-          <Info className="h-4 w-4 text-indigo-600" />
+      <div className="mt-6 rounded-2xl border border-zinc-200/90 bg-white p-4.5 text-xs shadow-xs">
+        <div className="flex items-center gap-2 font-semibold text-zinc-950">
+          <Info className="h-4 w-4 text-zinc-700" />
           <span>Objective Profile Variables</span>
         </div>
-        <p className="mt-1 text-slate-600">
+        <p className="mt-1 text-zinc-500 leading-relaxed">
           Personalization is strictly populated from public facts detected in the creator&apos;s bio or captions. No hallucinated observations.
         </p>
         <div className="mt-3 flex flex-wrap gap-2 font-mono text-[11px]">
-          <span className="rounded bg-white px-2 py-1 text-indigo-700 border border-indigo-200 shadow-2xs">&#123;&#123;first_name&#125;&#125;</span>
-          <span className="rounded bg-white px-2 py-1 text-indigo-700 border border-indigo-200 shadow-2xs">&#123;&#123;username&#125;&#125;</span>
-          <span className="rounded bg-white px-2 py-1 text-indigo-700 border border-indigo-200 shadow-2xs">&#123;&#123;niche&#125;&#125;</span>
-          <span className="rounded bg-white px-2 py-1 text-indigo-700 border border-indigo-200 shadow-2xs">&#123;&#123;followers&#125;&#125;</span>
-          <span className="rounded bg-white px-2 py-1 text-indigo-700 border border-indigo-200 shadow-2xs">&#123;&#123;sender_name&#125;&#125;</span>
-          <span className="rounded bg-white px-2 py-1 text-indigo-700 border border-indigo-200 shadow-2xs">&#123;&#123;vault_username&#125;&#125;</span>
+          <span className="rounded-md bg-zinc-50 px-2 py-1 text-zinc-800 border border-zinc-200 shadow-2xs">&#123;&#123;first_name&#125;&#125;</span>
+          <span className="rounded-md bg-zinc-50 px-2 py-1 text-zinc-800 border border-zinc-200 shadow-2xs">&#123;&#123;username&#125;&#125;</span>
+          <span className="rounded-md bg-zinc-50 px-2 py-1 text-zinc-800 border border-zinc-200 shadow-2xs">&#123;&#123;niche&#125;&#125;</span>
+          <span className="rounded-md bg-zinc-50 px-2 py-1 text-zinc-800 border border-zinc-200 shadow-2xs">&#123;&#123;followers&#125;&#125;</span>
+          <span className="rounded-md bg-zinc-50 px-2 py-1 text-zinc-800 border border-zinc-200 shadow-2xs">&#123;&#123;sender_name&#125;&#125;</span>
+          <span className="rounded-md bg-zinc-50 px-2 py-1 text-zinc-800 border border-zinc-200 shadow-2xs">&#123;&#123;vault_username&#125;&#125;</span>
         </div>
       </div>
 
       {/* Test Preview Simulator Inputs */}
-      <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 text-xs shadow-xs">
-        <span className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">
+      <div className="mt-6 rounded-2xl border border-zinc-200/90 bg-white p-4 text-xs shadow-xs">
+        <span className="font-semibold text-zinc-950 uppercase tracking-wider text-[11px]">
           Live Interpolation Simulator
         </span>
-        <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="mt-2.5 grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div>
-            <span className="text-[10px] font-semibold text-slate-500">First Name</span>
+            <span className="text-[10px] font-semibold text-zinc-500">First Name</span>
             <input
               type="text"
               value={testFirstName}
               onChange={e => setTestFirstName(e.target.value)}
-              className="mt-1 w-full rounded bg-slate-50 p-1.5 text-xs text-slate-900 border border-slate-300 focus:border-slate-800 focus:outline-none"
+              className="mt-1 w-full rounded-lg bg-zinc-50/60 p-1.5 text-xs text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
             />
           </div>
           <div>
-            <span className="text-[10px] font-semibold text-slate-500">Username</span>
+            <span className="text-[10px] font-semibold text-zinc-500">Username</span>
             <input
               type="text"
               value={testUsername}
               onChange={e => setTestUsername(e.target.value)}
-              className="mt-1 w-full rounded bg-slate-50 p-1.5 text-xs text-slate-900 border border-slate-300 focus:border-slate-800 focus:outline-none"
+              className="mt-1 w-full rounded-lg bg-zinc-50/60 p-1.5 text-xs text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
             />
           </div>
           <div>
-            <span className="text-[10px] font-semibold text-slate-500">Niche</span>
+            <span className="text-[10px] font-semibold text-zinc-500">Niche</span>
             <input
               type="text"
               value={testNiche}
               onChange={e => setTestNiche(e.target.value)}
-              className="mt-1 w-full rounded bg-slate-50 p-1.5 text-xs text-slate-900 border border-slate-300 focus:border-slate-800 focus:outline-none"
+              className="mt-1 w-full rounded-lg bg-zinc-50/60 p-1.5 text-xs text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
             />
           </div>
           <div>
-            <span className="text-[10px] font-semibold text-slate-500">Followers</span>
+            <span className="text-[10px] font-semibold text-zinc-500">Followers</span>
             <input
               type="text"
               value={testFollowers}
               onChange={e => setTestFollowers(e.target.value)}
-              className="mt-1 w-full rounded bg-slate-50 p-1.5 text-xs text-slate-900 border border-slate-300 focus:border-slate-800 focus:outline-none"
+              className="mt-1 w-full rounded-lg bg-zinc-50/60 p-1.5 text-xs text-zinc-900 border border-zinc-300 focus:border-zinc-800 focus:bg-white focus:outline-none"
             />
           </div>
         </div>
@@ -128,18 +128,18 @@ export default function TemplatesPage() {
           return (
             <div
               key={tpl.id}
-              className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs"
+              className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-zinc-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-slate-900">{tpl.name}</h3>
+                  <h3 className="text-sm font-semibold text-zinc-950">{tpl.name}</h3>
                   <span className="rounded bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700 border border-indigo-200">
                     {tpl.target_tier || 'Tier A'}
                   </span>
                 </div>
                 <button
                   onClick={() => copyTemplate(tpl.id, previewText)}
-                  className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-900 transition font-medium cursor-pointer"
+                  className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900 transition font-medium cursor-pointer"
                 >
                   {copiedId === tpl.id ? (
                     <>
@@ -157,20 +157,20 @@ export default function TemplatesPage() {
 
               {/* Rendered Preview */}
               <div className="mt-3">
-                <div className="text-[10px] font-semibold uppercase text-slate-400 mb-1">
+                <div className="text-[10px] font-semibold uppercase text-zinc-400 mb-1">
                   Rendered Output for Prospect:
                 </div>
-                <p className="bg-slate-50 p-3.5 rounded-lg border border-slate-200 text-xs text-slate-800 whitespace-pre-wrap leading-relaxed font-sans">
+                <p className="bg-zinc-50/70 p-3.5 rounded-xl border border-zinc-200/80 text-xs text-zinc-800 whitespace-pre-wrap leading-relaxed font-sans">
                   {previewText}
                 </p>
               </div>
 
               {/* Raw Template */}
               <div className="mt-3">
-                <div className="text-[10px] font-semibold uppercase text-slate-400 mb-1">
+                <div className="text-[10px] font-semibold uppercase text-zinc-400 mb-1">
                   Raw Template String:
                 </div>
-                <pre className="bg-slate-100/70 p-2.5 rounded text-[11px] text-slate-600 font-mono whitespace-pre-wrap border border-slate-200">
+                <pre className="bg-zinc-100/70 p-2.5 rounded-xl text-[11px] text-zinc-600 font-mono whitespace-pre-wrap border border-zinc-200">
                   {tpl.template}
                 </pre>
               </div>
