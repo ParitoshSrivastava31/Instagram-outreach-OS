@@ -11,7 +11,7 @@ import {
   FileText,
   BarChart3,
   Settings,
-  Zap
+  Sparkles
 } from 'lucide-react';
 import { MonthlyBudgetStatus } from '@/types';
 
@@ -43,27 +43,23 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/90 backdrop-blur-md">
+      <div className="mx-auto flex h-12 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Brand identity */}
         <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 shadow-sm">
-              <Zap className="h-4 w-4 text-white" />
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-900 text-white shadow-xs group-hover:bg-black transition">
+              <span className="text-xs font-bold tracking-tighter">V</span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold tracking-tight text-slate-900 text-sm">Instagram Outreach OS</span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 border border-slate-200">
-                  for @vault.moment
-                </span>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold tracking-tight text-zinc-900">Instagram Outreach OS</span>
+              <span className="text-[11px] text-zinc-400 font-mono">/ @vault.moment</span>
             </div>
           </Link>
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-0.5">
           {navItems.map(item => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -71,39 +67,39 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition ${
+                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition ${
                   isActive
-                    ? 'bg-slate-100 text-slate-900 shadow-2xs font-semibold'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-zinc-100 text-zinc-900 shadow-2xs font-semibold'
+                    : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900'
                 }`}
               >
-                <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-slate-900' : 'text-slate-400'}`} />
+                <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-zinc-900' : 'text-zinc-400'}`} />
                 {item.label}
               </Link>
             );
           })}
         </nav>
 
-        {/* Right side live budget & limit metrics */}
-        <div className="flex items-center gap-2.5">
-          {/* Provider status */}
-          <div className="hidden lg:flex items-center gap-1.5 rounded-full bg-slate-50 px-2.5 py-1 text-[11px] border border-slate-200 text-slate-600">
+        {/* Right side live budget & telemetry */}
+        <div className="flex items-center gap-2">
+          {/* Provider status badge */}
+          <div className="hidden lg:flex items-center gap-1.5 rounded-full bg-zinc-50 px-2.5 py-0.5 text-[11px] border border-zinc-200 text-zinc-600">
             <span
               className={`h-1.5 w-1.5 rounded-full ${
                 providerInfo?.isMock ? 'bg-amber-500' : 'bg-emerald-500'
               }`}
             />
-            <span>
+            <span className="font-medium">
               {providerInfo?.isMock ? 'Sandbox Mode' : 'Apify Live'}
             </span>
           </div>
 
           {/* Monthly Budget Guard */}
-          <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 text-xs border border-slate-200">
-            <span className="text-slate-500 text-[11px]">Budget:</span>
+          <div className="flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-0.5 text-[11px] border border-zinc-200 font-mono">
+            <span className="text-zinc-400">Budget:</span>
             <span
-              className={`font-mono text-[11px] font-semibold ${
-                budgetStatus?.is_budget_exceeded ? 'text-red-600' : 'text-emerald-700'
+              className={`font-semibold ${
+                budgetStatus?.is_budget_exceeded ? 'text-rose-600' : 'text-zinc-800'
               }`}
             >
               ${budgetStatus ? budgetStatus.estimated_usage_usd.toFixed(2) : '0.00'} / $
@@ -111,11 +107,11 @@ export default function Navbar() {
             </span>
           </div>
 
-          {/* Daily Queue Progress */}
-          <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 text-xs border border-slate-200">
-            <span className="text-slate-500 text-[11px]">Today:</span>
-            <span className="font-mono text-[11px] font-semibold text-slate-900">
-              {budgetStatus?.today_qualified_leads ?? 0} / 60
+          {/* Daily Queue Count */}
+          <div className="flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-0.5 text-[11px] border border-zinc-200 font-mono">
+            <span className="text-zinc-400">Queue:</span>
+            <span className="font-semibold text-zinc-900">
+              {budgetStatus?.today_qualified_leads ?? 0}
             </span>
           </div>
         </div>
