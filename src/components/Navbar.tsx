@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Compass,
   Send,
@@ -12,6 +12,7 @@ import {
   BarChart3,
   Settings,
   Command,
+  Lock,
 } from 'lucide-react';
 import { MonthlyBudgetStatus } from '@/types';
 import Tooltip from './Tooltip';
@@ -19,11 +20,23 @@ import ShortcutsModal from './ShortcutsModal';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [budgetStatus, setBudgetStatus] = useState<MonthlyBudgetStatus | null>(null);
   const [providerInfo, setProviderInfo] = useState<{ id: string; name: string; isMock: boolean } | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
 
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/login');
+      router.refresh();
+    } catch {
+      window.location.href = '/login';
+    }
+  };
+
   useEffect(() => {
+    if (pathname === '/login') return;
     fetch('/api/discovery/status')
       .then(res => res.json())
       .then(data => {
@@ -53,6 +66,8 @@ export default function Navbar() {
     { label: 'Database', href: '/leads', icon: Users },
     { label: 'Campaigns', href: '/campaigns', icon: Layers },
   ];
+
+  if (pathname === '/login') return null;
 
   return (
     <>
@@ -142,6 +157,15 @@ export default function Navbar() {
               >
                 <Settings className="h-3.5 w-3.5" />
               </Link>
+            </Tooltip>
+
+            <Tooltip label="Lock Workspace (Sign Out)">
+              <button
+                onClick={handleLogout}
+                className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+              >
+                <Lock className="h-3.5 w-3.5" />
+              </button>
             </Tooltip>
 
             <Tooltip label="Keyboard Shortcuts (?)">

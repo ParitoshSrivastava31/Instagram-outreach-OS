@@ -164,6 +164,7 @@ You can deploy the complete standalone Next.js app (frontend + API routes) direc
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = `your_supabase_anon_key`
    - `SUPABASE_SERVICE_ROLE_KEY` = `your_supabase_service_role_key`
    - `ADMIN_EMAILS` = `your_email@example.com`
+   - `ADMIN_PASSWORD` = `your_secret_dashboard_passcode` (e.g. `vault2026`)
    - `APIFY_API_TOKEN` = `your_apify_api_token`
    - `APIFY_ACTOR_ID` = `apify/instagram-profile-scraper`
    - `APIFY_MONTHLY_BUDGET_USD` = `4.50`
@@ -196,6 +197,7 @@ Verify your `.env.local` or Cloud Run environment variables match the table belo
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public Supabase Anon Key | `ey...` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Secret Server-side Supabase Key | `ey...` |
 | `ADMIN_EMAILS` | Comma-separated admin emails | `paritosh@example.com` |
+| `ADMIN_PASSWORD` | Master passcode to unlock the dashboard | `vault2026` |
 | `APIFY_API_TOKEN` | Apify personal API access token | `apify_api_...` |
 | `APIFY_ACTOR_ID` | Instagram scraping actor ID | `apify/instagram-profile-scraper` |
 | `APIFY_MONTHLY_BUDGET_USD` | Monthly cost guardrail | `4.50` |
