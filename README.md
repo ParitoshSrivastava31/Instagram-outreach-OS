@@ -117,26 +117,75 @@ The most valuable prospects are **creator-operators, AI educators, and founders*
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 *(Note: If Apify or Supabase are not yet configured, the app automatically runs in built-in Sandbox Simulator mode so you can test immediately without error).*
 
-### 8. Deploy the Backend to Google Cloud Run
-1. Ensure the Google Cloud SDK (`gcloud`) and Docker are installed.
-2. Authenticate and configure project:
-   ```bash
-   gcloud auth login
-   gcloud config set project YOUR_GCP_PROJECT_ID
-   ```
-3. Build and deploy container:
-   ```bash
-   gcloud run deploy insta-outreach-os \
-     --source . \
-     --platform managed \
-     --region us-central1 \
-     --allow-unauthenticated \
-     --set-env-vars NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co",NEXT_PUBLIC_SUPABASE_ANON_KEY="your_anon_key",SUPABASE_SERVICE_ROLE_KEY="your_service_role_key",APIFY_API_TOKEN="your_apify_token",APIFY_MONTHLY_BUDGET_USD="4.50",META_VERIFY_TOKEN="vault_outreach_meta_token_2026"
-   ```
+### 8. Deploy to Google Cloud Run (via Cloud Console Web Portal)
 
-### 9. Deploy the Frontend (Vercel or Cloud Run)
-- **Option A (Google Cloud Run)**: The provided multi-stage `Dockerfile` serves both Next.js App Router frontend and API routes as a unified, standalone production service.
-- **Option B (Vercel)**: Connect your GitHub repository to Vercel and input the environment variables from `.env.example`.
+You can deploy the complete standalone Next.js app (frontend + API routes) directly from the **Google Cloud Console Web Portal** without using the `gcloud` CLI:
+
+#### Step A: Enable Required Cloud APIs
+1. Open the [Google Cloud Console](https://console.cloud.google.com).
+2. Select your Google Cloud Project (or create a new one).
+3. In the search bar at the top, search for and enable:
+   - **Cloud Run Admin API**
+   - **Cloud Build API**
+   - **Artifact Registry API**
+
+#### Step B: Create the Cloud Run Service
+1. In the navigation menu (or search bar), go to **Cloud Run** (`console.cloud.google.com/run`).
+2. Click **Create Service** (or **Deploy Container** → **Service**).
+3. Under **Deployment options**, choose **"Continuously deploy from a repository"**.
+4. Click **Set Up Cloud Build**:
+   - **Repository Provider**: Select **GitHub** (or Bitbucket/Cloud Source Repositories).
+   - Authorize Google Cloud to access your GitHub account if prompted.
+   - **Repository**: Select your `instagram-outreach-os` repository.
+   - Click **Next**.
+   - **Branch**: Set to `^main$` (or your default branch).
+   - **Build Type**: Choose **Dockerfile**.
+   - **Source location**: `/Dockerfile`.
+   - Click **Save**.
+
+#### Step C: Configure Service Settings
+1. **Service name**: Enter `instagram-outreach-os`.
+2. **Region**: Select a region close to your users/database (e.g. `us-central1`, `asia-south1`, etc.).
+3. **Authentication**: Select **"Allow unauthenticated invocations"** (essential for public web app access and receiving Meta Instagram webhooks).
+4. **Ingress control**: Select **"All"** (Allow direct traffic from the internet).
+
+#### Step D: Container Scaling & Environment Variables
+1. Click to expand **Container, Volumes, Networking, Security**.
+2. Under the **Container** tab:
+   - **Container port**: `8080` (matches `EXPOSE 8080` in the `Dockerfile`).
+   - **Capacity**:
+     - Memory: `1 GiB` (or `512 MiB`)
+     - CPU: `1 vCPU`
+   - **Autoscaling**:
+     - Minimum number of instances: `0` (scales to zero to stay within the free tier when idle).
+     - Maximum number of instances: `5` or `10`.
+3. Under **Environment variables**, click **Add Variable** for each configuration key:
+   - `NEXT_PUBLIC_SUPABASE_URL` = `https://your-project.supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = `your_supabase_anon_key`
+   - `SUPABASE_SERVICE_ROLE_KEY` = `your_supabase_service_role_key`
+   - `ADMIN_EMAILS` = `your_email@example.com`
+   - `APIFY_API_TOKEN` = `your_apify_api_token`
+   - `APIFY_ACTOR_ID` = `apify/instagram-profile-scraper`
+   - `APIFY_MONTHLY_BUDGET_USD` = `4.50`
+   - `MAX_DAILY_QUALIFIED_LEADS` = `60`
+   - `MAX_RAW_PROFILES_PER_RUN` = `150`
+   - `MAX_FOLLOWERS` = `20000`
+   - `META_VERIFY_TOKEN` = `vault_outreach_meta_token_2026`
+
+#### Step E: Deploy & Access Live URL
+1. Click the blue **Create** button at the bottom.
+2. Cloud Build will automatically build your Docker container image and deploy it.
+3. Once the green checkmark appears, your service is live!
+4. Copy the service URL shown at the top (e.g. `https://instagram-outreach-os-xxxxxxxx-uc.a.run.app`).
+
+---
+
+### 9. Connect Meta Instagram Webhooks
+Once Cloud Run is deployed:
+1. In Meta App Dashboard, set Webhook Callback URL to:
+   `https://<your-cloud-run-url>/api/webhooks/instagram`
+2. Enter the Verify Token matching your `META_VERIFY_TOKEN` env var (`vault_outreach_meta_token_2026`).
+3. Click **Verify and Save**.
 
 ### 10. Configure All Environment Variables
 Verify your `.env.local` or Cloud Run environment variables match the table below:
