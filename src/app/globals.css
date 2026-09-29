@@ -135,6 +135,7 @@ kbd {
 .text-insta {
   background: linear-gradient(135deg, #833ab4 0%, #e1306c 50%, #fd1d1d 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

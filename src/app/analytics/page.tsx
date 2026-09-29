@@ -130,7 +130,7 @@ export default function AnalyticsPage() {
               <div className="mt-3 space-y-2 text-xs">
                 {stats.repliesByTemplate.map((item: any) => (
                   <div key={item.templateName} className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50 border border-zinc-200">
-                    <span className="text-zinc-700 font-medium truncate max-w-[240px]">{item.templateName}</span>
+                    <span className="text-zinc-700 font-medium truncate max-w-60">{item.templateName}</span>
                     <span className="font-mono text-rose-700 font-bold">{item.count} replies</span>
                   </div>
                 ))}

@@ -51,7 +51,7 @@ function LoginForm() {
     <div className="w-full max-w-sm relative z-10">
       {/* Brand identity badge */}
       <div className="flex flex-col items-center mb-8 text-center">
-        <div className="h-12 w-12 rounded-[14px] bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center shadow-lg shadow-pink-500/20 mb-4 transition-transform hover:scale-105">
+        <div className="h-12 w-12 rounded-[14px] bg-linear-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center shadow-lg shadow-pink-500/20 mb-4 transition-transform hover:scale-105">
           <svg
             className="h-6 w-6"
             viewBox="0 0 24 24"
