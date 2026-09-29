@@ -51,9 +51,16 @@ export class ApifyInstagramProvider implements InstagramDiscoveryProvider {
       inputPayload.usernames = extractedUsernames.length > 0 ? extractedUsernames : ['vault.moment'];
     } else {
       // General instagram-scraper handles keyword search
-      inputPayload.search = searchQueries.join(' ');
+      // Clean and pass the top 2-3 concise search keywords (comma-separated), not a 25-word run-on sentence
+      const conciseQueries = searchQueries
+        .slice(0, 3)
+        .map(q => q.replace(/save this|save this reel|for later/gi, '').trim())
+        .filter(q => q.length > 2);
+
+      const searchTerm = conciseQueries.length > 0 ? conciseQueries.join(', ') : 'content creator';
+      inputPayload.search = searchTerm;
       inputPayload.searchType = 'user';
-      inputPayload.resultsType = 'details';
+      // Note: Do not pass resultsType: 'details' as that requires direct URLs and breaks keyword search
       if (extractedUsernames.length > 0) {
         inputPayload.usernames = extractedUsernames;
       }
@@ -149,7 +156,12 @@ export class ApifyInstagramProvider implements InstagramDiscoveryProvider {
 
     return items
       .map(item => {
-        const username = item.username || item.ownerUsername || item.name || '';
+        const username =
+          item.username ||
+          item.ownerUsername ||
+          item.user?.username ||
+          (typeof item.name === 'string' && !item.name.includes(' ') ? item.name : '') ||
+          '';
         if (!username) return null;
 
         const latestCaptions: string[] = [];
@@ -166,21 +178,27 @@ export class ApifyInstagramProvider implements InstagramDiscoveryProvider {
         const followersCount =
           typeof item.followersCount === 'number'
             ? item.followersCount
+            : typeof item.followerCount === 'number'
+            ? item.followerCount
+            : typeof item.followers === 'number'
+            ? item.followers
             : typeof item.edge_followed_by?.count === 'number'
             ? item.edge_followed_by.count
-            : parseInt(item.followers || '0', 10);
+            : typeof item.user?.follower_count === 'number'
+            ? item.user.follower_count
+            : parseInt(item.followers || item.followerCount || '0', 10);
 
         return {
           username: username.replace(/^@/, '').toLowerCase().trim(),
-          fullName: item.fullName || item.title || item.name || '',
-          biography: item.biography || item.bio || item.description || '',
+          fullName: item.fullName || item.displayName || item.title || item.user?.full_name || item.name || '',
+          biography: item.biography || item.bio || item.description || item.user?.biography || '',
           followersCount: isNaN(followersCount) ? 0 : followersCount,
-          followsCount: item.followsCount || item.edge_follow?.count || 0,
-          postsCount: item.postsCount || item.edge_owner_to_timeline_media?.count || 0,
-          profilePicUrl: item.profilePicUrl || item.profilePicUrlHD || item.profile_pic_url || '',
-          isVerified: Boolean(item.isVerified || item.verified),
-          isPrivate: Boolean(item.isPrivate || item.private),
-          isBusinessAccount: Boolean(item.isBusinessAccount || item.is_business_account),
+          followsCount: item.followsCount || item.followingCount || item.edge_follow?.count || 0,
+          postsCount: item.postsCount || item.mediaCount || item.edge_owner_to_timeline_media?.count || 0,
+          profilePicUrl: item.profilePicUrl || item.profilePicUrlHD || item.profile_pic_url || item.user?.profile_pic_url || '',
+          isVerified: Boolean(item.isVerified || item.verified || item.user?.is_verified),
+          isPrivate: Boolean(item.isPrivate || item.private || item.user?.is_private),
+          isBusinessAccount: Boolean(item.isBusinessAccount || item.is_business_account || item.isBusiness),
           businessCategoryName: item.businessCategoryName || item.category || '',
           externalUrl: item.externalUrl || item.website || '',
           latestPostsCaptions: latestCaptions,
