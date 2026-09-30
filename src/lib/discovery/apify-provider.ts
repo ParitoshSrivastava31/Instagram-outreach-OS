@@ -81,49 +81,27 @@ export class ApifyInstagramProvider implements InstagramDiscoveryProvider {
         const errorText = await response.text();
         console.warn(`[ApifyProvider] Apify run returned HTTP ${response.status}: ${errorText}`);
 
-        // If credits exhausted or paid actor blocked on free plan, fall back to mock catalog seamlessly
         if (
           response.status === 402 ||
           response.status === 429 ||
           errorText.includes('not-enough-usage') ||
           errorText.includes('exceeded') ||
-          errorText.includes('usage')
+          errorText.includes('usage') ||
+          errorText.includes('HARD_LIMIT_EXCEEDED')
         ) {
-          console.warn('[ApifyProvider] Apify monthly credit limit reached. Falling back to sandbox dataset.');
-          const { MockInstagramProvider } = await import('./mock-provider');
-          const mockProvider = new MockInstagramProvider();
-          const mockResult = await mockProvider.searchProfiles(options);
-          return {
-            profiles: mockResult.profiles,
-            usage: {
-              computeUnits: 0,
-              estimatedCostUsd: 0,
-              providerRunId: 'fallback-sandbox'
-            }
-          };
+          throw new Error(
+            'Apify Monthly Usage Limit Exceeded ($5.00 free tier cap reached on this Apify account). ' +
+            'Please top up credits or switch to a new Apify API token in .env.local / settings. ' +
+            `Details: HTTP ${response.status} - ${errorText.slice(0, 150)}`
+          );
         }
 
-        throw new Error(`Apify run failed (HTTP ${response.status}): ${errorText}`);
+        throw new Error(`Apify run failed (HTTP ${response.status}): ${errorText.slice(0, 200)}`);
       }
 
       runData = await response.json();
     } catch (err: any) {
       console.error('[ApifyProvider] Network or API error:', err.message);
-      // Fallback gracefully if network/budget error
-      if (err.message.includes('not-enough-usage') || err.message.includes('credit') || err.message.includes('HTTP 400') || err.message.includes('HTTP 402')) {
-        console.warn('[ApifyProvider] Switching to sandbox catalog due to Apify usage limit.');
-        const { MockInstagramProvider } = await import('./mock-provider');
-        const mockProvider = new MockInstagramProvider();
-        const mockResult = await mockProvider.searchProfiles(options);
-        return {
-          profiles: mockResult.profiles,
-          usage: {
-            computeUnits: 0,
-            estimatedCostUsd: 0,
-            providerRunId: 'fallback-sandbox'
-          }
-        };
-      }
       throw new Error(`Failed to execute Apify Instagram Actor: ${err.message}`);
     }
 
