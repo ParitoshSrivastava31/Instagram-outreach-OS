@@ -635,8 +635,7 @@ export async function getMonthlyUsageStatus(): Promise<MonthlyBudgetStatus> {
         .maybeSingle();
       if (data) {
         persistedUsage = parseFloat(data.estimated_cost_usd) || 0;
-        // Sync in-memory with persisted value (highest wins to avoid under-counting)
-        memoryStore.monthlyUsageUsd = Math.max(memoryStore.monthlyUsageUsd, persistedUsage);
+        memoryStore.monthlyUsageUsd = persistedUsage;
       }
     } catch (e) {
       // First month or table empty — use in-memory
@@ -706,6 +705,31 @@ export async function recordRunUsage(costUsd: number, qualifiedCount: number): P
       console.warn('[DB] Failed to persist usage to Supabase:', e);
     }
   }
+}
+
+export async function resetMonthlyUsage(): Promise<MonthlyBudgetStatus> {
+  memoryStore.monthlyUsageUsd = 0.0;
+  memoryStore.todayQualifiedCount = 0;
+
+  if (isSupabaseConfigured && supabaseServer) {
+    const monthKey = getMonthKey();
+    try {
+      await supabaseServer
+        .from('usage_tracking')
+        .upsert({
+          id: monthKey,
+          month_str: monthKey,
+          estimated_cost_usd: 0.0,
+          budget_limit_usd: BUDGET_CONFIG.monthlyBudgetUsd,
+          qualified_leads_count: 0,
+          updated_at: new Date().toISOString()
+        });
+    } catch (e) {
+      console.warn('[DB] Failed to reset usage in Supabase:', e);
+    }
+  }
+
+  return getMonthlyUsageStatus();
 }
 
 export async function getDiscoveryRuns(): Promise<DiscoveryRun[]> {
