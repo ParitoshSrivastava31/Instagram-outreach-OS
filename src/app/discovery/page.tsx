@@ -13,7 +13,10 @@ import {
   XCircle,
   ArrowRight,
   DollarSign,
-  Info
+  Info,
+  ExternalLink,
+  X,
+  KeyRound
 } from 'lucide-react';
 
 import { Campaign, MonthlyBudgetStatus } from '@/types';
@@ -162,20 +165,54 @@ export default function DiscoveryPage() {
 
       {/* Monthly Budget Warning Banner if Budget Reached */}
       {isBudgetBlocked && (
-        <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50/50 p-4">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
-            <div>
-              <h3 className="text-sm font-medium text-rose-900">Monthly Discovery Budget Reached</h3>
-              <p className="mt-1 text-xs text-rose-700 leading-relaxed font-normal">
-                To guarantee zero unexpected out-of-pocket costs, further discovery runs are prevented until the next monthly billing cycle.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-4 text-xs font-mono">
-                <div className="text-zinc-700">Monthly Ceiling: <span className="font-semibold text-zinc-900">${budgetStatus?.monthly_budget_usd.toFixed(2)}</span></div>
-                <div className="text-rose-700">Estimated Usage: <span className="font-semibold">${budgetStatus?.estimated_usage_usd.toFixed(2)}</span></div>
-                <div className="text-emerald-700">Remaining: <span className="font-semibold">${budgetStatus?.remaining_budget_usd.toFixed(2)}</span></div>
-                <div className="text-zinc-700">Days Elapsed: <span className="font-semibold">{budgetStatus?.days_elapsed} / 30</span></div>
+        <div className="mt-6 rounded-2xl border border-rose-200/90 bg-linear-to-b from-rose-50/90 via-rose-50/50 to-white p-4 sm:p-5 shadow-xs transition-all duration-200">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="relative flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600 shadow-2xs mt-0.5">
+                <AlertTriangle className="h-4.5 w-4.5" />
               </div>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-semibold text-rose-950 tracking-tight">
+                    Monthly Discovery Budget Limit Reached
+                  </h3>
+                  <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-mono font-medium text-rose-700 border border-rose-200">
+                    COST CEILING ENFORCED
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-rose-900/80 leading-relaxed font-normal">
+                  To guarantee zero unexpected out-of-pocket costs, further live discovery runs are paused until the next monthly billing cycle resets.
+                </p>
+
+                <div className="mt-3.5 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+                  <div className="rounded-xl bg-white/90 p-2.5 border border-rose-100 shadow-2xs">
+                    <div className="text-[10px] text-zinc-400 font-sans uppercase">Ceiling</div>
+                    <div className="font-semibold text-zinc-900 mt-0.5">${budgetStatus?.monthly_budget_usd.toFixed(2)}</div>
+                  </div>
+                  <div className="rounded-xl bg-white/90 p-2.5 border border-rose-100 shadow-2xs">
+                    <div className="text-[10px] text-zinc-400 font-sans uppercase">Estimated Usage</div>
+                    <div className="font-semibold text-rose-600 mt-0.5">${budgetStatus?.estimated_usage_usd.toFixed(2)}</div>
+                  </div>
+                  <div className="rounded-xl bg-white/90 p-2.5 border border-rose-100 shadow-2xs">
+                    <div className="text-[10px] text-zinc-400 font-sans uppercase">Remaining</div>
+                    <div className="font-semibold text-emerald-700 mt-0.5">${budgetStatus?.remaining_budget_usd.toFixed(2)}</div>
+                  </div>
+                  <div className="rounded-xl bg-white/90 p-2.5 border border-rose-100 shadow-2xs">
+                    <div className="text-[10px] text-zinc-400 font-sans uppercase">Billing Cycle</div>
+                    <div className="font-semibold text-zinc-800 mt-0.5">Day {budgetStatus?.days_elapsed} / 30</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="sm:self-start shrink-0">
+              <button
+                onClick={() => setForceMock(true)}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl bg-zinc-900 px-3.5 py-2 text-xs font-medium text-white hover:bg-zinc-800 transition shadow-xs cursor-pointer active:scale-95"
+              >
+                <span>Use Sandbox Mode ($0)</span>
+                <ArrowRight className="h-3 w-3 text-zinc-400" />
+              </button>
             </div>
           </div>
         </div>
@@ -376,9 +413,9 @@ export default function DiscoveryPage() {
             {/* Execute Run Button */}
             <button
               onClick={handleRunDiscovery}
-              disabled={isRunning || isBudgetBlocked}
+              disabled={isRunning || (isBudgetBlocked && !forceMock)}
               className={`mt-5 w-full flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-medium shadow-xs transition cursor-pointer active:scale-95 ${
-                isBudgetBlocked
+                isBudgetBlocked && !forceMock
                   ? 'bg-zinc-200 cursor-not-allowed text-zinc-400'
                   : isRunning
                   ? 'bg-zinc-800 text-white cursor-wait'
@@ -386,7 +423,7 @@ export default function DiscoveryPage() {
               }`}
             >
               <Sparkles className="h-4 w-4" />
-              <span>{isRunning ? 'Discovering & Scoring Profiles...' : 'Run Discovery Now'}</span>
+              <span>{isRunning ? 'Discovering & Scoring Profiles...' : forceMock ? 'Run Sandbox Discovery ($0)' : 'Run Discovery Now'}</span>
             </button>
 
             {/* Re-sync / Recover previous run button */}
@@ -402,20 +439,92 @@ export default function DiscoveryPage() {
 
           {/* Recovery Success Notification */}
           {recoveryNotice && (
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-xs text-emerald-900 shadow-2xs flex items-center gap-2">
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-xs text-emerald-900 shadow-2xs flex items-center gap-2 animate-in fade-in">
               <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
               <span className="font-medium">{recoveryNotice}</span>
             </div>
           )}
 
-          {/* Run Error Display */}
+          {/* Enhanced Mobile-Responsive Error Display */}
           {runError && (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50/50 p-4 text-xs text-rose-800">
-              <div className="font-bold flex items-center gap-1.5 text-rose-900">
-                <XCircle className="h-4 w-4" />
-                <span>Discovery Execution Error</span>
+            <div className="rounded-2xl border border-rose-200/90 bg-linear-to-b from-rose-50/90 via-rose-50/40 to-white p-4 sm:p-5 shadow-xs transition-all duration-200 animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3 min-w-0">
+                  <div className="relative flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600 shadow-2xs mt-0.5">
+                    <AlertTriangle className="h-4.5 w-4.5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h4 className="text-xs sm:text-sm font-semibold text-rose-950 tracking-tight">
+                        {runError.includes('Usage Limit') || runError.includes('402') || runError.includes('credit')
+                          ? 'Apify Monthly Allowance Reached'
+                          : 'Discovery Execution Notice'}
+                      </h4>
+                      <span className="rounded-full bg-rose-100/90 px-2 py-0.5 text-[10px] font-mono font-medium text-rose-700 border border-rose-200/80 shrink-0">
+                        {runError.includes('Usage Limit') || runError.includes('402') ? 'QUOTA CAP ($5.00)' : 'API ERROR'}
+                      </span>
+                    </div>
+                    <p className="mt-1.5 text-xs text-rose-900/85 leading-relaxed font-normal break-words">
+                      {runError}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setRunError(null)}
+                  className="rounded-lg p-1 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition cursor-pointer shrink-0"
+                  aria-label="Dismiss error"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-              <p className="mt-1 leading-relaxed">{runError}</p>
+
+              {/* Actionable guidance if this is an Apify budget / credit limit error */}
+              {(runError.includes('Usage Limit') || runError.includes('Apify') || runError.includes('credit') || runError.includes('402')) && (
+                <div className="mt-4 pt-3.5 border-t border-rose-200/60">
+                  <div className="text-[10px] font-semibold text-rose-900 uppercase tracking-wider mb-2">
+                    Quick Resolution Options:
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <a
+                      href="https://console.apify.com/billing"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white border border-rose-200/90 hover:border-rose-300 hover:bg-rose-50/50 transition text-zinc-900 group shadow-2xs"
+                    >
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-3.5 w-3.5 text-rose-600 shrink-0" />
+                        <span className="font-medium text-[11px]">Top Up Apify Credits</span>
+                      </div>
+                      <ExternalLink className="h-3 w-3 text-zinc-400 group-hover:text-zinc-700 shrink-0" />
+                    </a>
+
+                    <Link
+                      href="/settings"
+                      className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white border border-rose-200/90 hover:border-rose-300 hover:bg-rose-50/50 transition text-zinc-900 group shadow-2xs"
+                    >
+                      <div className="flex items-center gap-2">
+                        <KeyRound className="h-3.5 w-3.5 text-zinc-600 shrink-0" />
+                        <span className="font-medium text-[11px]">Update API Token</span>
+                      </div>
+                      <ArrowRight className="h-3 w-3 text-zinc-400 group-hover:text-zinc-700 shrink-0" />
+                    </Link>
+                  </div>
+
+                  <div className="mt-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl bg-white/80 p-2.5 border border-rose-200/70 text-[11px]">
+                    <span className="text-zinc-600">Want to test the full pipeline and scoring without any Apify credits?</span>
+                    <button
+                      onClick={() => {
+                        setForceMock(true);
+                        setRunError(null);
+                      }}
+                      className="self-start sm:self-center font-semibold text-rose-700 hover:text-rose-900 underline underline-offset-2 cursor-pointer shrink-0"
+                    >
+                      Switch to Sandbox Mode ($0 Cost) &rarr;
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

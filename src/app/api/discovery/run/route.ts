@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       budgetStatus.today_qualified_leads
     );
 
-    if (!budgetCheck.canProceed) {
+    if (!forceMock && !budgetCheck.canProceed) {
       return NextResponse.json(
         {
           success: false,
