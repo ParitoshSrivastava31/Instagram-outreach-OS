@@ -146,3 +146,50 @@ kbd {
   padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
 }
 
+/* High-end Discovery Button Shimmer & Glowing Aura */
+@keyframes shimmerSweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulseBorderGlow {
+  0%, 100% {
+    box-shadow: 0 0 14px -1px rgba(225, 29, 72, 0.4), 0 4px 18px -2px rgba(234, 88, 12, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 28px 2px rgba(225, 29, 72, 0.7), 0 6px 32px 3px rgba(234, 88, 12, 0.45);
+  }
+}
+
+@keyframes indeterminateBeam {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+.btn-discovery-running {
+  background: linear-gradient(
+    90deg,
+    #18181b 0%,
+    #be185d 20%,
+    #e11d48 40%,
+    #ea580c 60%,
+    #be185d 80%,
+    #18181b 100%
+  );
+  background-size: 250% 100%;
+  animation: shimmerSweep 3s infinite linear, pulseBorderGlow 2.4s infinite ease-in-out;
+}
+
+.progress-beam {
+  animation: indeterminateBeam 1.8s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+

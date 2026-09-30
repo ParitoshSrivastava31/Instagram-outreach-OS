@@ -17,7 +17,11 @@ import {
   ExternalLink,
   X,
   KeyRound,
-  RotateCcw
+  RotateCcw,
+  Loader2,
+  Radio,
+  Search,
+  Filter
 } from 'lucide-react';
 
 import { Campaign, MonthlyBudgetStatus } from '@/types';
@@ -67,6 +71,58 @@ export default function DiscoveryPage() {
 
 
   const activeCampaign = campaigns.find(c => c.id === selectedCampaignId) || campaigns[0];
+
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+    if (isRunning) {
+      setElapsedSeconds(0);
+      interval = setInterval(() => {
+        setElapsedSeconds(prev => prev + 1);
+      }, 1000);
+    } else {
+      setElapsedSeconds(0);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning]);
+
+  const discoveryPhases = [
+    {
+      title: 'Connecting to Scraper API...',
+      subtitle: forceMock ? 'Accessing zero-cost sandbox database' : 'Initializing Apify Instagram Scraper actor & proxy grid',
+      icon: Radio,
+    },
+    {
+      title: 'Crawling Creator Keywords & Hashtags...',
+      subtitle: `Scanning target keywords (${activeCampaign?.keywords?.slice(0, 3).join(', ') || 'creators'})`,
+      icon: Search,
+    },
+    {
+      title: 'Extracting Bios & Engagement Metrics...',
+      subtitle: 'Gathering follower counts, bios, and latest Reels captions',
+      icon: Users,
+    },
+    {
+      title: 'Scoring Profiles & Role Taxonomy...',
+      subtitle: 'Filtering exclusions and evaluating Tier A/B/C lead thresholds',
+      icon: Filter,
+    },
+    {
+      title: 'Preparing Personalized Vault DMs...',
+      subtitle: 'Interpolating objective research signals into DM templates',
+      icon: Sparkles,
+    },
+  ];
+
+  const currentPhaseIndex = Math.min(
+    Math.floor(elapsedSeconds / 8),
+    discoveryPhases.length - 1
+  );
+
+  const currentPhase = discoveryPhases[currentPhaseIndex];
 
   const handleRunDiscovery = async () => {
     setIsRunning(true);
@@ -439,21 +495,125 @@ export default function DiscoveryPage() {
               </div>
             </div>
 
-            {/* Execute Run Button */}
+            {/* Execute Run Button with animated shimmer & dynamic states */}
             <button
               onClick={handleRunDiscovery}
               disabled={isRunning || (isBudgetBlocked && !forceMock)}
-              className={`mt-5 w-full flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-medium shadow-xs transition cursor-pointer active:scale-95 ${
+              className={`relative mt-5 w-full flex items-center justify-center gap-2 rounded-xl py-3.5 px-4 text-xs font-semibold shadow-xs transition-all duration-300 cursor-pointer overflow-hidden ${
                 isBudgetBlocked && !forceMock
                   ? 'bg-zinc-200 cursor-not-allowed text-zinc-400'
                   : isRunning
-                  ? 'bg-zinc-800 text-white cursor-wait'
-                  : 'btn-insta'
+                  ? 'btn-discovery-running text-white cursor-wait select-none'
+                  : 'btn-insta active:scale-[0.98]'
               }`}
             >
-              <Sparkles className="h-4 w-4" />
-              <span>{isRunning ? 'Discovering & Scoring Profiles...' : forceMock ? 'Run Sandbox Discovery ($0)' : 'Run Discovery Now'}</span>
+              {/* Shimmer sweep reflection on top of button while running */}
+              {isRunning && (
+                <div className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmerSweep_2.5s_infinite] bg-linear-to-r from-transparent via-white/20 to-transparent" />
+              )}
+
+              {isRunning ? (
+                <div className="relative flex items-center justify-between w-full">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Loader2 className="h-4 w-4 animate-spin text-white shrink-0" />
+                    <span className="truncate tracking-tight font-medium text-[11px] sm:text-xs">
+                      {currentPhase.title}
+                    </span>
+                  </div>
+
+                  <span className="font-mono text-[10px] font-semibold bg-white/20 rounded-md px-1.5 py-0.5 ml-2 shrink-0 backdrop-blur-xs text-white">
+                    {String(Math.floor(elapsedSeconds / 60)).padStart(2, '0')}:{String(elapsedSeconds % 60).padStart(2, '0')}s
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 shrink-0" />
+                  <span>{forceMock ? 'Run Sandbox Discovery ($0)' : 'Run Discovery Now'}</span>
+                </>
+              )}
             </button>
+
+            {/* Live Pipeline Monitor HUD Card when running */}
+            {isRunning && (
+              <div className="mt-3.5 rounded-2xl border border-pink-200/90 bg-linear-to-b from-pink-50/80 via-rose-50/40 to-white p-4 shadow-sm transition-all duration-300 animate-in fade-in slide-in-from-top-2">
+                {/* HUD Header */}
+                <div className="flex items-center justify-between border-b border-pink-100/90 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-500 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-pink-600" />
+                    </span>
+                    <span className="text-[11px] font-semibold text-zinc-900 tracking-tight">
+                      Live Discovery Pipeline
+                    </span>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1 rounded-full bg-pink-100/90 px-2 py-0.5 text-[9px] font-mono font-medium text-pink-700 border border-pink-200/80">
+                    ACTIVE SCRAPE
+                  </span>
+                </div>
+
+                {/* Animated Gradient Progress Track */}
+                <div className="mt-3">
+                  <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-pink-100/80">
+                    <div className="progress-beam absolute inset-0 w-1/2 rounded-full bg-linear-to-r from-[#f09433] via-[#dc2743] to-[#bc1888] shadow-xs shadow-pink-500/50" />
+                  </div>
+                </div>
+
+                {/* Current Stage Spotlight Card */}
+                <div className="mt-3 flex items-start gap-2.5 rounded-xl bg-white p-2.5 border border-pink-100/90 shadow-2xs">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-linear-to-tr from-[#f09433] to-[#dc2743] text-white shadow-2xs mt-0.5">
+                    {React.createElement(currentPhase.icon, { className: 'h-3.5 w-3.5 animate-pulse' })}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[11px] font-semibold text-zinc-900 leading-tight">
+                      {currentPhase.title}
+                    </div>
+                    <div className="text-[10px] text-zinc-500 mt-0.5 font-normal leading-normal truncate">
+                      {currentPhase.subtitle}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Live Step Checklist */}
+                <div className="mt-3 space-y-1 text-[10px]">
+                  {discoveryPhases.map((phase, idx) => {
+                    const isDone = idx < currentPhaseIndex;
+                    const isCurrent = idx === currentPhaseIndex;
+                    return (
+                      <div
+                        key={phase.title}
+                        className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors ${
+                          isCurrent
+                            ? 'bg-white font-medium text-zinc-900 shadow-2xs border border-pink-100'
+                            : isDone
+                            ? 'text-emerald-700 font-normal'
+                            : 'text-zinc-400 font-normal opacity-50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 truncate pr-2">
+                          {isDone ? (
+                            <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
+                          ) : isCurrent ? (
+                            <Loader2 className="h-3 w-3 text-pink-600 animate-spin shrink-0" />
+                          ) : (
+                            <div className="h-3 w-3 rounded-full border border-zinc-300 shrink-0" />
+                          )}
+                          <span className="truncate">{phase.title}</span>
+                        </div>
+                        <span className="font-mono text-[9px] uppercase tracking-wider shrink-0 text-zinc-400">
+                          {isDone ? 'DONE' : isCurrent ? 'RUNNING' : 'QUEUED'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-2.5 text-[10px] text-zinc-400 text-center font-normal">
+                  Apify Instagram crawler active. Leads will appear automatically when complete.
+                </div>
+              </div>
+            )}
 
             {/* Re-sync / Recover previous run button */}
             <button
