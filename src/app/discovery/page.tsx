@@ -653,7 +653,7 @@ export default function DiscoveryPage() {
                         {runError.includes('Usage Limit') || runError.includes('402') ? 'QUOTA CAP ($5.00)' : 'API ERROR'}
                       </span>
                     </div>
-                    <p className="mt-1.5 text-xs text-rose-900/85 leading-relaxed font-normal break-words">
+                    <p className="mt-1.5 text-xs text-rose-900/85 leading-relaxed font-normal wrap-break-word">
                       {runError}
                     </p>
                   </div>
