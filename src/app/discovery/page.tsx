@@ -16,7 +16,8 @@ import {
   Info,
   ExternalLink,
   X,
-  KeyRound
+  KeyRound,
+  RotateCcw
 } from 'lucide-react';
 
 import { Campaign, MonthlyBudgetStatus } from '@/types';
@@ -134,6 +135,25 @@ export default function DiscoveryPage() {
     }
   };
 
+  const [isResettingBudget, setIsResettingBudget] = useState(false);
+
+  const handleResetBudget = async () => {
+    setIsResettingBudget(true);
+    try {
+      const res = await fetch('/api/discovery/reset-budget', { method: 'POST' });
+      const data = await res.json();
+      if (data.success && data.budgetStatus) {
+        setBudgetStatus(data.budgetStatus);
+        setRecoveryNotice('Budget counter reset to $0.00 for your fresh Apify account.');
+        setTimeout(() => setRecoveryNotice(null), 5000);
+      }
+    } catch {
+      // fallback
+    } finally {
+      setIsResettingBudget(false);
+    }
+  };
+
   const isBudgetBlocked = budgetStatus?.is_budget_exceeded || false;
 
   return (
@@ -205,7 +225,16 @@ export default function DiscoveryPage() {
               </div>
             </div>
 
-            <div className="sm:self-start shrink-0">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:self-start shrink-0">
+              <button
+                onClick={handleResetBudget}
+                disabled={isResettingBudget}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl bg-white border border-rose-200 px-3.5 py-2 text-xs font-medium text-rose-800 hover:bg-rose-50 transition shadow-2xs cursor-pointer active:scale-95"
+              >
+                <RotateCcw className={`h-3.5 w-3.5 text-rose-600 ${isResettingBudget ? 'animate-spin' : ''}`} />
+                <span>{isResettingBudget ? 'Resetting...' : 'Reset Counter ($0.00)'}</span>
+              </button>
+
               <button
                 onClick={() => setForceMock(true)}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl bg-zinc-900 px-3.5 py-2 text-xs font-medium text-white hover:bg-zinc-800 transition shadow-xs cursor-pointer active:scale-95"
