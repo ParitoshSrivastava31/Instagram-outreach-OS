@@ -184,7 +184,9 @@ export default function Navbar() {
             {/* Provider Status Indicator */}
             <Tooltip
               label={
-                providerInfo?.isMock
+                budgetStatus?.is_budget_exceeded
+                  ? `Apify Monthly Budget Exceeded ($${budgetStatus.estimated_usage_usd.toFixed(2)} / $${budgetStatus.monthly_budget_usd.toFixed(2)}). Live runs paused.`
+                  : providerInfo?.isMock
                   ? 'Sandbox Mode (Mock Apify). Set APIFY_API_TOKEN in .env.local to activate Live Apify.'
                   : 'Live Apify Provider Active'
               }
@@ -193,17 +195,25 @@ export default function Navbar() {
                 <span className="relative flex h-1.5 w-1.5">
                   <span
                     className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                      providerInfo?.isMock ? 'bg-amber-400' : 'bg-emerald-400'
+                      budgetStatus?.is_budget_exceeded
+                        ? 'bg-rose-400'
+                        : providerInfo?.isMock
+                        ? 'bg-amber-400'
+                        : 'bg-emerald-400'
                     }`}
                   />
                   <span
                     className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
-                      providerInfo?.isMock ? 'bg-amber-500' : 'bg-emerald-500'
+                      budgetStatus?.is_budget_exceeded
+                        ? 'bg-rose-500'
+                        : providerInfo?.isMock
+                        ? 'bg-amber-500'
+                        : 'bg-emerald-500'
                     }`}
                   />
                 </span>
-                <span className="text-[10px] hidden xs:inline-block">
-                  {providerInfo?.isMock ? 'Sandbox' : 'Live'}
+                <span className={`text-[10px] hidden xs:inline-block ${budgetStatus?.is_budget_exceeded ? 'text-rose-600 font-semibold' : ''}`}>
+                  {budgetStatus?.is_budget_exceeded ? 'Budget Limit' : providerInfo?.isMock ? 'Sandbox' : 'Live'}
                 </span>
               </div>
             </Tooltip>

@@ -632,7 +632,7 @@ export async function getMonthlyUsageStatus(): Promise<MonthlyBudgetStatus> {
         .from('usage_tracking')
         .select('estimated_cost_usd, qualified_leads_count')
         .eq('id', monthKey)
-        .single();
+        .maybeSingle();
       if (data) {
         persistedUsage = parseFloat(data.estimated_cost_usd) || 0;
         // Sync in-memory with persisted value (highest wins to avoid under-counting)
@@ -677,7 +677,7 @@ export async function recordRunUsage(costUsd: number, qualifiedCount: number): P
         .from('usage_tracking')
         .select('estimated_cost_usd, qualified_leads_count')
         .eq('id', monthKey)
-        .single();
+        .maybeSingle();
 
       if (existing) {
         const newCost = parseFloat(existing.estimated_cost_usd) + costUsd;
