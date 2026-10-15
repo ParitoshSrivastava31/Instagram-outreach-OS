@@ -187,14 +187,8 @@ export default function SettingsPage() {
 
             <div className="rounded-xl bg-zinc-50/70 p-3.5 border border-zinc-200/80 shadow-2xs">
               <div className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">Webhook Verify Token (META_VERIFY_TOKEN)</div>
-              <div className="mt-1 flex items-center justify-between font-mono text-zinc-800">
-                <span>your_meta_verify_token_here</span>
-                <button
-                  onClick={() => copyToClipboard('token', 'your_meta_verify_token_here')}
-                  className="text-zinc-400 hover:text-zinc-700 cursor-pointer"
-                >
-                  <Copy className="h-3.5 w-3.5" />
-                </button>
+              <div className="mt-1 flex items-center justify-between font-mono text-zinc-800 text-xs">
+                <span>Configured via .env.local (META_VERIFY_TOKEN)</span>
               </div>
             </div>
 
